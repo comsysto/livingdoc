@@ -17,6 +17,7 @@ ext {
     libs = [
             'auto-service': 'com.google.auto.service:auto-service:1.0-rc4',
             'slf4j': 'org.slf4j:log4j-over-slf4j:1.7.25',
+            'lombok': 'org.projectlombok:lombok:1.18.4',
             'junit': 'junit:junit:4.12'
     ]
 }

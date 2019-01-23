@@ -7,6 +7,7 @@ dependencies {
 
     implementation libs.'auto-service'
     implementation libs.'slf4j'
+    compileOnly libs.'lombok'
     testImplementation libs.'junit'
 }
 
