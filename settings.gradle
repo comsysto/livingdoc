@@ -1,0 +1,5 @@
+rootProject.name = 'living-documentation-lab'
+
+include 'annotation-processors'
+include 'annotations'
+
