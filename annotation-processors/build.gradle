@@ -3,6 +3,21 @@ plugins {
 }
 
 dependencies {
-    implementation 'com.google.auto.service:auto-service:1.0-rc4'
-    testImplementation 'junit:junit:4.12'
+    implementation project(':annotations')
+
+    implementation libs.'auto-service'
+    implementation libs.'slf4j'
+    testImplementation libs.'junit'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = group
+            artifactId = 'livingdoc-annotation-processors'
+            version = version
+
+            from components.java
+        }
+    }
 }

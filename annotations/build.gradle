@@ -1,15 +1,16 @@
-plugins {
-    id 'java'
-}
-
-version 'unspecified'
-
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    testCompile 'junit:junit:4.12'
+    testImplementation libs.'junit'
 }
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = group
+            artifactId = 'livingdoc-annotations'
+            version = version
+
+            from components.java
+        }
+    }
+}
+                                                                  

@@ -1,2 +1,0 @@
-# Living Documentation Lab
-
