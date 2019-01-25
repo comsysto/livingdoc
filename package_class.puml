@@ -1,21 +1,28 @@
 @startuml
 
-class Vehicle
-class Car
-class GroundVehicle
+interface Flying
 class Airplane
 note bottom of Airplane
 This models an airplane, a //flying//
 vehicle that is **very** fast.
 end note
 
-interface Flying
-class FlyingVehicle
+class GroundVehicle
 class Train
+class Vehicle
+class Car
+class FlyingVehicle
 
-GroundVehicle <|-- Car
-Vehicle <|-- GroundVehicle
-FlyingVehicle <|-- Airplane
-Vehicle <|-- FlyingVehicle
-GroundVehicle <|-- Train
+
+    FlyingVehicle <|-- Airplane
+
+    Vehicle <|-- GroundVehicle
+
+    GroundVehicle <|-- Train
+
+    GroundVehicle <|-- Car
+
+    Vehicle <|-- FlyingVehicle
+
+    Flying <|.. FlyingVehicle
 @enduml

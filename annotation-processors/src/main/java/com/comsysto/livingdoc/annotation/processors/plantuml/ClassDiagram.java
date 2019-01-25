@@ -9,9 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 import javax.lang.model.element.Name;
 
 @SuppressWarnings("unused")
@@ -27,19 +25,15 @@ public class ClassDiagram extends DefaultObjectWrapper {
             .collect(toList());
     }
 
-    public List<AssociationsPart> getInheritanceAssociations() {
-        Set<Name> whitelist = parts.stream()
+    public List<AssociationPart> getInheritanceAssociations() {
+        final Set<Name> whitelist = parts.stream()
             .map(part -> part.getTypeElement().getSimpleName())
             .collect(toSet());
 
         return parts.stream()
-            .map(ClassDiagramPart::getSuperClassAssociation)
-            .flatMap(ClassDiagram::toStream)
+            .map(ClassDiagramPart::getAssociations)
+            .flatMap(List::stream)
             .filter(association -> whitelist.contains(association.getLeft().getSimpleName()))
             .collect(toList());
-    }
-
-    private static <T> Stream<T> toStream(final Optional<T> t) {
-        return t.map(Stream::of).orElse(Stream.empty());
     }
 }

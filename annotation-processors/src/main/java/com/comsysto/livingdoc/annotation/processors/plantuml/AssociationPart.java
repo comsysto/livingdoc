@@ -5,7 +5,12 @@ import lombok.Value;
 import javax.lang.model.element.TypeElement;
 
 @Value
-public class AssociationsPart {
+public class AssociationPart {
     TypeElement left;
     TypeElement right;
+    Relation relation;
+
+    public enum Relation {
+        IMPLEMENTS, EXTENDS
+    }
 }

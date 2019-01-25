@@ -6,10 +6,10 @@
 </#list>
 
 <#list parts as part>
-    <@types.type part/>
+    <@types.renderType part/>
 </#list>
 
 <#list getInheritanceAssociations() as association>
-    <@types.inheritanceAssociation association/>
+    <@types.renderAssociation association/>
 </#list>
 @enduml
