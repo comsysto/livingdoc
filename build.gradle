@@ -1,3 +1,8 @@
+plugins {
+    id 'de.gafertp.plantuml' version '1.1.0'
+}
+apply plugin: 'de.gafertp.plantuml'
+
 
 allprojects {
     apply plugin: 'maven-publish'
@@ -24,5 +29,8 @@ ext {
     ]
 }
 
+plantUml {
+    render input: 'package_class.puml', output: 'package_class.png'
+}
 
-
+build.finalizedBy('plantUml')
