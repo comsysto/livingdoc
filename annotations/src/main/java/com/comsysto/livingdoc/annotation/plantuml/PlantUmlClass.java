@@ -9,5 +9,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 public @interface PlantUmlClass {
 
-    String diagramId() default "package-class";
+    String diagramId() default "package";
+    String[] includeFiles() default {};
 }

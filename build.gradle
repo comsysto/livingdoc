@@ -15,10 +15,12 @@ allprojects {
 
 ext {
     libs = [
+            'commons-lang3': 'org.apache.commons:commons-lang3:3.8.1',
             'auto-service': 'com.google.auto.service:auto-service:1.0-rc4',
-            'slf4j': 'org.slf4j:log4j-over-slf4j:1.7.25',
-            'lombok': 'org.projectlombok:lombok:1.18.4',
-            'junit': 'junit:junit:4.12'
+            'freemarker'  : 'org.freemarker:freemarker:2.3.23',
+            'slf4j'       : 'org.slf4j:log4j-over-slf4j:1.7.25',
+            'lombok'      : 'org.projectlombok:lombok:1.18.4',
+            'junit'       : 'junit:junit:4.12'
     ]
 }
 

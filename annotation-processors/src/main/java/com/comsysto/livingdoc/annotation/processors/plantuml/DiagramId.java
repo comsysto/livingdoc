@@ -1,4 +1,4 @@
-package com.comsysto.livingdoc.annotation.processors;
+package com.comsysto.livingdoc.annotation.processors.plantuml;
 
 import lombok.Value;
 
