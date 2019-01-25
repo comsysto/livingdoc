@@ -18,7 +18,6 @@ end note
     </#list>
 </#macro>
 
-
 <#macro renderAssociation association>
 <#-- @ftlvariable name="association" type="com.comsysto.livingdoc.annotation.processors.plantuml.AssociationPart" -->
     <#if association.relation="EXTENDS">
@@ -28,6 +27,5 @@ end note
     <#else>
         <#local relationOperator="-">
     </#if>
-
-    ${association.left.simpleName} ${relationOperator} ${association.right.simpleName}
+${association.left.simpleName} ${relationOperator} ${association.right.simpleName}
 </#macro>

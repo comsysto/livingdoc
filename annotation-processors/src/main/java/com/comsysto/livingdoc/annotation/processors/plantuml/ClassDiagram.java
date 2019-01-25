@@ -1,6 +1,5 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml;
 
-import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -17,13 +16,9 @@ import javax.lang.model.element.Name;
 @Data
 public class ClassDiagram extends DefaultObjectWrapper {
 
+    private final String title;
+    private final List<String> includeFiles;
     private final List<ClassDiagramPart> parts;
-
-    public List<String> getIncludeFiles() {
-        return parts.stream()
-            .flatMap(part -> stream(part.getAnnotation().includeFiles()))
-            .collect(toList());
-    }
 
     public List<AssociationPart> getInheritanceAssociations() {
         final Set<Name> whitelist = parts.stream()

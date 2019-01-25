@@ -6,11 +6,11 @@ import static java.util.stream.Collectors.toList;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
 import com.comsysto.livingdoc.annotation.processors.plantuml.AssociationPart.Relation;
-import lombok.Builder;
 import lombok.Value;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
@@ -19,9 +19,8 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 @Value
-@Builder
 public class ClassDiagramPart {
-    private final DiagramId diagramId;
+    private final Set<DiagramId> diagramIds;
     private final PlantUmlClass annotation;
     private final TypeElement typeElement;
     private final List<PlantUmlNote> notes;
