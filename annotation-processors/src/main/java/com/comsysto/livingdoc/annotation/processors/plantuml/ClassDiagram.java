@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 import javax.lang.model.element.Name;
 
+@SuppressWarnings("unused")
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ClassDiagram extends DefaultObjectWrapper {

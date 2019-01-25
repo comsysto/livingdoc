@@ -9,7 +9,13 @@
     <#else>
         <#local typeDeclaration="class">
     </#if>
-${typeDeclaration} ${part.getName()}
+${typeDeclaration} ${part.name}
+    <#list part.notes as note>
+note ${note.position()?lower_case} of ${part.name}
+${note.body()}
+end note
+
+    </#list>
 </#macro>
 
 

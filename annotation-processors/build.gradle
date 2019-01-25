@@ -3,11 +3,12 @@ plugins {
 }
 
 dependencies {
-    implementation project(':annotations')
-    implementation libs.'commons-lang3'
-    implementation libs.'freemarker'
-    implementation libs.'auto-service'
-    implementation libs.'slf4j'
+    api project(':annotations')
+    api libs.'commons-lang3'
+    api libs.'freemarker'
+    api libs.'auto-service'
+    api libs.'slf4j-api'
+    api libs.'slf4j'
     compileOnly libs.'lombok'
     testImplementation libs.'junit'
 }

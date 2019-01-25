@@ -1,20 +1,27 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml;
 
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toSet;
 
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote.Container;
 import com.google.auto.service.AutoService;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import lombok.SneakyThrows;
+import freemarker.template.TemplateException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
@@ -28,6 +35,7 @@ import javax.lang.model.element.TypeElement;
 @SupportedAnnotationTypes("com.comsysto.livingdoc.annotation.plantuml.*")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
+@Slf4j
 public class PlantUmlClassProcessor extends AbstractProcessor {
     private final Configuration freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_23);
 
@@ -40,7 +48,6 @@ public class PlantUmlClassProcessor extends AbstractProcessor {
     @Override
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
         annotations.forEach(annotation -> processAnnotation(annotation, roundEnv));
-
         return true;
     }
 
@@ -48,13 +55,13 @@ public class PlantUmlClassProcessor extends AbstractProcessor {
         final Set<? extends Element> annotated = roundEnv.getElementsAnnotatedWith(annotation);
         switch (annotation.getSimpleName().toString()) {
             case "PlantUmlClass":
-                processAnnotatedTypes(annotated);
+                processPlantumlClass(annotated.stream().map(TypeElement.class::cast).collect(toSet()));
+                break;
         }
     }
 
-    private void processAnnotatedTypes(final Set<? extends Element> annotatedTypes) {
+    private void processPlantumlClass(final Set<TypeElement> annotatedTypes) {
         final Map<DiagramId, List<ClassDiagramPart>> generatedFiles = annotatedTypes.stream()
-            .map(TypeElement.class::cast)
             .map(this::createDiagramPart)
             .collect(groupingBy(ClassDiagramPart::getDiagramId));
 
@@ -62,18 +69,33 @@ public class PlantUmlClassProcessor extends AbstractProcessor {
     }
 
     private ClassDiagramPart createDiagramPart(final TypeElement annotated) {
-        final PlantUmlClass annotation = annotated.getAnnotation(PlantUmlClass.class);
-        return new ClassDiagramPart(new DiagramId(annotation.diagramId()), annotation, annotated);
+        final PlantUmlClass classAnnotation = annotated.getAnnotation(PlantUmlClass.class);
+
+        return ClassDiagramPart.builder()
+            .diagramId(new DiagramId(classAnnotation.diagramId()))
+            .annotation(classAnnotation)
+            .typeElement(annotated)
+            .notes(getNotes(annotated))
+            .build();
     }
 
-    @SneakyThrows
+    private List<PlantUmlNote> getNotes(final TypeElement annotated) {
+        return Optional.ofNullable(annotated.getAnnotation(Container.class))
+            .map(Container::value)
+            .map(Arrays::asList)
+            .orElseGet(() -> Optional.ofNullable(annotated.getAnnotation(PlantUmlNote.class))
+                .map(Collections::singletonList)
+                .orElse(Collections.emptyList()));
+    }
+
     private void createDiagram(final DiagramId id, final List<ClassDiagramPart> parts) {
-        final File     f        = new File(id.getValue() + "_class.puml");
-        final Template template = freemarkerConfiguration.getTemplate("class-diagram.puml.ftl");
+        final File f = new File(id.getValue() + "_class.puml");
 
         try (BufferedWriter out = new BufferedWriter(new FileWriter(f))) {
+            final Template template = freemarkerConfiguration.getTemplate("class-diagram.puml.ftl");
             template.process(new ClassDiagram(parts), out);
-        } catch (IOException e) {
+        } catch (IOException | TemplateException e) {
+            log.error("Failed", e);
             throw new RuntimeException(e);
         }
     }

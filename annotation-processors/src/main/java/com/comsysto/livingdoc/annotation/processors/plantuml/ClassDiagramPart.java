@@ -3,6 +3,8 @@ package com.comsysto.livingdoc.annotation.processors.plantuml;
 import static java.util.stream.Collectors.toList;
 
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
+import lombok.Builder;
 import lombok.Value;
 
 import java.util.List;
@@ -14,10 +16,12 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 @Value
+@Builder
 public class ClassDiagramPart {
     private final DiagramId diagramId;
     private final PlantUmlClass annotation;
     private final TypeElement typeElement;
+    private final List<PlantUmlNote> notes;
 
     public String getName() {
         return typeElement.getSimpleName().toString();
@@ -33,6 +37,7 @@ public class ClassDiagramPart {
 
     Optional<AssociationsPart> getSuperClassAssociation() {
         return Optional.ofNullable(getTypeElement().getSuperclass())
+            .filter(DeclaredType.class::isInstance)
             .map(ClassDiagramPart::toTypeElement)
             .map(parentElement -> new AssociationsPart(parentElement, getTypeElement()));
     }
