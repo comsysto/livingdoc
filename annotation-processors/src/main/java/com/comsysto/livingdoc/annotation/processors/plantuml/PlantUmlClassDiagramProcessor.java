@@ -9,6 +9,9 @@ import static java.util.stream.Collectors.toSet;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNotes;
+import com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagram;
+import com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagramPart;
+import com.comsysto.livingdoc.annotation.processors.plantuml.model.DiagramId;
 import com.google.auto.service.AutoService;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
@@ -39,6 +42,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
+@SuppressWarnings("unused")
 @SupportedAnnotationTypes("com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
@@ -47,15 +51,16 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
     private final Configuration freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_23);
 
     public PlantUmlClassDiagramProcessor() {
-        freemarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(
-            this.getClass(),
-            "/com/comsysto/livingdoc/annotation/processors/plantuml"));
+        freemarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(this.getClass(), "."));
     }
 
     @Override
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
-        annotations.forEach(annotation -> processAnnotation(annotation, roundEnv));
-        return true;
+        if (!roundEnv.errorRaised() && !roundEnv.processingOver()) {
+            annotations.forEach(annotation -> processAnnotation(annotation, roundEnv));
+            return true;
+        }
+        return false;
     }
 
     private void processAnnotation(final TypeElement annotation, final RoundEnvironment roundEnv) {
@@ -82,6 +87,7 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
 
     private ClassDiagramPart createDiagramPart(final TypeElement annotated) {
         final PlantUmlClass classAnnotation = annotated.getAnnotation(PlantUmlClass.class);
+        log.debug("Processing PlantUmlClass annotation on type: {}", annotated);
 
         return new ClassDiagramPart(
             stream(classAnnotation.diagramIds()).map(DiagramId::of).collect(toSet()),
@@ -106,6 +112,7 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
 
         Properties settings = new Properties();
         try (final FileReader in = new FileReader(settingsFile)) {
+            log.debug("Settings file: {}", settingsFile.getAbsoluteFile());
             settings.load(in);
         } catch (IOException e) {
             log.debug("No settings file found: {}", settingsFile.getAbsoluteFile());

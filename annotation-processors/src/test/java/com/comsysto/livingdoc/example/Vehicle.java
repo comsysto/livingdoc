@@ -1,4 +1,4 @@
-package com.comsysto.livingdoc.annotation.processors.plantuml;
+package com.comsysto.livingdoc.example;
 
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
 

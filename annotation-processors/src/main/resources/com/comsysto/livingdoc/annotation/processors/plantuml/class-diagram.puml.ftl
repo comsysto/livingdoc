@@ -1,5 +1,5 @@
 <#-- @ftlvariable name="title" type="String" -->
-<#-- @ftlvariable name="parts" type="java.util.List<com.comsysto.livingdoc.annotation.processors.plantuml.ClassDiagramPart>" -->
+<#-- @ftlvariable name="parts" type="java.util.List<com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagramPart>" -->
 <#import "types.part.ftl" as types>
 @startuml
 <#list getIncludeFiles() as includeFile>
@@ -15,4 +15,9 @@ title ${title}
 <#list getInheritanceAssociations() as association>
     <@types.renderAssociation association/>
 </#list>
+
+<#--<#list getReferenceAssociations() as association>-->
+<#--    ${association.left.simpleName} - ${association.right.simpleName}-->
+<#--</#list>-->
+
 @enduml

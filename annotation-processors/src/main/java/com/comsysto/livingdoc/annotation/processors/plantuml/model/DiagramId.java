@@ -1,4 +1,4 @@
-package com.comsysto.livingdoc.annotation.processors.plantuml;
+package com.comsysto.livingdoc.annotation.processors.plantuml.model;
 
 import lombok.NonNull;
 import lombok.Value;

@@ -1,5 +1,5 @@
 <#macro renderType part>
-<#-- @ftlvariable name="part" type="com.comsysto.livingdoc.annotation.processors.plantuml.ClassDiagramPart" -->
+<#-- @ftlvariable name="part" type="com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagramPart" -->
     <#if part.isInterface()>
         <#local typeDeclaration="interface">
     <#elseif part.isAbstract()>
@@ -19,11 +19,11 @@ end note
 </#macro>
 
 <#macro renderAssociation association>
-<#-- @ftlvariable name="association" type="com.comsysto.livingdoc.annotation.processors.plantuml.AssociationPart" -->
+<#-- @ftlvariable name="association" type="com.comsysto.livingdoc.annotation.processors.plantuml.model.InheritenceAssociationPart" -->
     <#if association.relation="EXTENDS">
-        <#local relationOperator="<|--">
+        <#local relationOperator="<--">
     <#elseif association.relation="IMPLEMENTS">
-        <#local relationOperator="<|..">
+        <#local relationOperator="<..">
     <#else>
         <#local relationOperator="-">
     </#if>

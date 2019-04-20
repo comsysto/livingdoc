@@ -1,4 +1,4 @@
-package com.comsysto.livingdoc.annotation.processors.plantuml;
+package com.comsysto.livingdoc.example;
 
 import static com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote.Position.BOTTOM;
 
