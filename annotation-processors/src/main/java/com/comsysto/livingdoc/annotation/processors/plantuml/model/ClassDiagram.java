@@ -1,5 +1,8 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml.model;
 
+import static com.comsysto.livingdoc.annotation.processors.plantuml.model.AssociationPart.Relation.EXTENDS;
+import static com.comsysto.livingdoc.annotation.processors.plantuml.model.AssociationPart.Relation.IMPLEMENTS;
+import static com.comsysto.livingdoc.annotation.processors.plantuml.model.AssociationPart.Relation.REFERENCES;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -7,6 +10,7 @@ import freemarker.template.DefaultObjectWrapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.Name;
@@ -26,6 +30,7 @@ public class ClassDiagram extends DefaultObjectWrapper {
         return parts.stream()
             .map(ClassDiagramPart::getAssociations)
             .flatMap(List::stream)
+            .filter(association -> EnumSet.of(EXTENDS, IMPLEMENTS).contains(association.getRelation()))
             .filter(association -> isWhiteListed(whitelist, association))
             .collect(toList());
     }
@@ -36,6 +41,7 @@ public class ClassDiagram extends DefaultObjectWrapper {
         return parts.stream()
             .map(ClassDiagramPart::getAssociations)
             .flatMap(List::stream)
+            .filter(association -> association.getRelation() == REFERENCES)
             .filter(association -> isWhiteListed(whitelist, association))
             .collect(toList());
     }
@@ -48,6 +54,6 @@ public class ClassDiagram extends DefaultObjectWrapper {
 
     private boolean isWhiteListed(final Set<Name> whitelist, final AssociationPart association) {
         return whitelist.stream()
-            .anyMatch(name -> name.contentEquals(association.getId().getValue()));
+            .anyMatch(name -> name.contentEquals(association.getRight().getSimpleName()));
     }
 }

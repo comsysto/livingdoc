@@ -16,8 +16,8 @@ title ${title}
     <@types.renderAssociation association/>
 </#list>
 
-<#--<#list getReferenceAssociations() as association>-->
-<#--    ${association.left.simpleName} - ${association.right.simpleName}-->
-<#--</#list>-->
+<#list getReferenceAssociations() as association>
+    <@types.renderAssociation association/>
+</#list>
 
 @enduml
