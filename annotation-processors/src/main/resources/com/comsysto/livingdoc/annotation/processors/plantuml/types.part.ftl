@@ -1,3 +1,4 @@
+
 <#macro renderType part>
 <#-- @ftlvariable name="part" type="com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagramPart" -->
     <#if part.isInterface()>
@@ -9,7 +10,13 @@
     <#else>
         <#local typeDeclaration="class">
     </#if>
-${typeDeclaration} ${part.name}
+${typeDeclaration} ${part.name}<#assign fields=part.getAnnotatedFields()><#if fields?has_content> {
+<#list fields as field>
+${simpleTypeName(field.asType())} ${field.simpleName}
+</#list>
+}
+</#if>
+    
     <#list part.notes as note>
 note ${note.position()?lower_case} of ${part.name}
 ${note.body()}
@@ -24,7 +31,7 @@ end note
     <#elseif association.relation="IMPLEMENTS">
         <#local relationOperator="<|..">
     <#else>
-        <#local relationOperator="--">
+        <#local relationOperator="-->">
     </#if>
 ${association.left.simpleName} ${relationOperator} ${association.right.simpleName}
 </#macro>

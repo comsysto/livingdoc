@@ -5,6 +5,7 @@ import static com.comsysto.livingdoc.annotation.processors.plantuml.model.Associ
 import static com.comsysto.livingdoc.annotation.processors.plantuml.model.AssociationPart.Relation.REFERENCES;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 
 import freemarker.template.DefaultObjectWrapper;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.Name;
+import javax.lang.model.type.TypeMirror;
 
 @SuppressWarnings("unused")
 @EqualsAndHashCode(callSuper = true)
@@ -46,6 +48,12 @@ public class ClassDiagram extends DefaultObjectWrapper {
             .collect(toList());
     }
 
+    public String simpleTypeName(TypeMirror typeMirror) {
+        return typeMirror.toString().contains(".")
+               ? substringAfterLast(typeMirror.toString(), ".")
+               : typeMirror.toString();
+    }
+
     private Set<Name> createWhitelist() {
         return parts.stream()
             .map(part -> part.getTypeElement().getSimpleName())
@@ -53,7 +61,7 @@ public class ClassDiagram extends DefaultObjectWrapper {
     }
 
     private boolean isWhiteListed(final Set<Name> whitelist, final AssociationPart association) {
-        return whitelist.stream()
-            .anyMatch(name -> name.contentEquals(association.getRight().getSimpleName()));
+        return whitelist.stream().anyMatch(name -> name.contentEquals(association.getRight().getSimpleName()))
+               && whitelist.stream().anyMatch(name -> name.contentEquals(association.getLeft().getSimpleName()));
     }
 }

@@ -42,9 +42,15 @@ public class ClassDiagramPart {
     }
 
     public List<AssociationPart> getReferenceAssociations() {
+        return getAnnotatedFields().stream()
+            .flatMap(element -> Optionals.stream(referenceAssociation(element)))
+            .collect(toList());
+    }
+
+    public List<VariableElement> getAnnotatedFields() {
         return typeElement.getEnclosedElements().stream()
             .filter(element -> element.getAnnotation(PlantUmlField.class) != null)
-            .flatMap(element -> Optionals.stream(referenceAssociation((VariableElement) element)))
+            .map(VariableElement.class::cast)
             .collect(toList());
     }
 

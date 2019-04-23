@@ -8,4 +8,9 @@ public class Train extends GroundVehicle {
 
     @PlantUmlField
     Car loadedCar;
+
+    public Train(final Car loadedCar, int numberOfWheels) {
+        this.loadedCar = loadedCar;
+        this.setNumberOfWheels(numberOfWheels);
+    }
 }

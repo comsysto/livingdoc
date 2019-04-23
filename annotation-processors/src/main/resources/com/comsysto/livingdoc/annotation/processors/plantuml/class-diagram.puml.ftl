@@ -5,6 +5,7 @@
 <#list getIncludeFiles() as includeFile>
 !include ${includeFile}
 </#list>
+hide empty members
 <#if title??>
 title ${title}
 </#if>
