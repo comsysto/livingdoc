@@ -35,9 +35,3 @@ ext {
             'assertj'        : 'org.assertj:assertj-core:3.11.1'
     ]
 }
-
-plantUml {
-    render input: 'package_class.puml', output: 'package_class.png'
-}
-
-build.finalizedBy('plantUml')

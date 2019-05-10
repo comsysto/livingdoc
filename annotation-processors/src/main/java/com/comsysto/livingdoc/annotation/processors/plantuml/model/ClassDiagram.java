@@ -1,8 +1,8 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml.model;
 
+import static com.comsysto.livingdoc.annotation.processors.plantuml.model.RelationPart.Relation.ASSOCIATION;
 import static com.comsysto.livingdoc.annotation.processors.plantuml.model.RelationPart.Relation.INHERITANCE;
 import static com.comsysto.livingdoc.annotation.processors.plantuml.model.RelationPart.Relation.REALIZATION;
-import static com.comsysto.livingdoc.annotation.processors.plantuml.model.RelationPart.Relation.ASSOCIATION;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
@@ -11,8 +11,11 @@ import freemarker.template.DefaultObjectWrapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
@@ -40,6 +43,12 @@ public class ClassDiagram extends DefaultObjectWrapper {
      * The type parts to be rendered in this diagram.
      */
     private final List<TypePart> parts;
+
+    public String getTitle() {
+        return Optional.ofNullable(title)
+            .filter(StringUtils::isNoneBlank)
+            .orElse(null);
+    }
 
     /**
      * Get all inheritance or realization relations within this diagram.

@@ -17,9 +17,7 @@ dependencies {
 }
 
 test {
-
-    // Pass the current directory to the tests:
-    systemProperty 'project.test.dir', '.'
+    systemProperty 'pumlgen.test.dir', './src/test/java'
 }
 
 publishing {

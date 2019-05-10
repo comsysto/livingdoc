@@ -1,5 +1,7 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml;
 
+import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor.KEY_OUT_DIR;
+import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor.KEY_SETTINGS_DIR;
 import static java.util.Arrays.stream;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.groupingBy;
@@ -37,6 +39,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
@@ -47,20 +50,31 @@ import javax.lang.model.element.TypeElement;
  */
 @SuppressWarnings("unused")
 @SupportedAnnotationTypes("com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass")
+@SupportedOptions({KEY_SETTINGS_DIR, KEY_OUT_DIR})
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
 @Slf4j
 public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
+    protected static final String KEY_SETTINGS_DIR = "pumlgen.settings.dir";
+    protected static final String DEF_SETTINGS_DIR = ".";
+    protected static final String KEY_OUT_DIR = "pumlgen.out.dir";
+    protected static final String DEF_OUT_DIR = "./out";
     private final Configuration freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_23);
 
+    private String settingsDir;
+    private String outDir;
+
     public PlantUmlClassDiagramProcessor() {
-        freemarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(
-            this.getClass(),
-            System.getProperty("template.dir", ".")));
+        freemarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(this.getClass(), ""));
     }
 
     @Override
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
+        log.debug("Environment: {}", processingEnv.getOptions().toString());
+
+        settingsDir = processingEnv.getOptions().getOrDefault(KEY_SETTINGS_DIR, DEF_SETTINGS_DIR);
+        outDir = processingEnv.getOptions().getOrDefault(KEY_OUT_DIR, DEF_OUT_DIR);
+
         if (!roundEnv.errorRaised() && !roundEnv.processingOver()) {
             annotations.forEach(annotation -> processAnnotation(annotation, roundEnv));
             return true;
@@ -84,8 +98,9 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
         switch (annotation.getQualifiedName().toString()) {
             case "com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass":
                 processPlantumlClassAnnotation(annotated);
+                break;
 
-                // Here we could add support for additional top-level annotations
+            // Here we could add support for additional top-level annotations
 
             default:
                 log.error(
@@ -138,8 +153,10 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
     }
 
     private void createDiagram(final DiagramId diagramId, final List<TypePart> parts) {
-        final File       outFile  = new File(diagramId.getValue() + "_class.puml");
+        final File       outFile  = getOutFile(diagramId);
         final Properties settings = loadSettings(diagramId);
+
+        log.debug("Create PlantUML diagram: {}", outFile);
 
         try (final BufferedWriter out = new BufferedWriter(new FileWriter(outFile))) {
             final Template template = freemarkerConfiguration.getTemplate("class-diagram.puml.ftl");
@@ -152,23 +169,32 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
                     parts),
                 out);
         } catch (IOException | TemplateException e) {
-            log.error("Failed", e);
+            log.error("Failed to generate diagram: " + outFile, e);
             throw new RuntimeException(e);
         }
     }
 
+    private File getOutFile(final DiagramId diagramId) {
+        final File diagramFile = new File(outDir, diagramId.getValue() + "_class.puml");
+
+        //noinspection ResultOfMethodCallIgnored
+        diagramFile.getParentFile().mkdirs();
+        return diagramFile;
+    }
+
     private Properties loadSettings(final DiagramId id) {
-        final File       settingsFile = new File(
-            System.getProperty("settings.dir", "."),
+        final File settingsFile = new File(
+            settingsDir,
             id.getValue() + "_class.properties");
-        final Properties settings     = new Properties();
+        final Properties settings = new Properties();
+        
         try (final FileReader in = new FileReader(settingsFile)) {
             log.debug("Settings file: {}", settingsFile.getAbsoluteFile());
             settings.load(in);
+            log.debug("Settings: \n{}", settings.toString());
         } catch (IOException e) {
             log.debug("No settings file found: {}", settingsFile.getAbsoluteFile());
         }
         return settings;
     }
-
 }

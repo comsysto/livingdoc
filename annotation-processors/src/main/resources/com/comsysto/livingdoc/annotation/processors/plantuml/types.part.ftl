@@ -28,7 +28,7 @@ end note
 <#macro renderAssociation association>
     <#if association.relation="INHERITANCE">
         <#local relationOperator="<|--">
-    <#elseif association.relation="RELAIZATION">
+    <#elseif association.relation="REALIZATION">
         <#local relationOperator="<|..">
     <#else>
         <#local relationOperator="-->">
