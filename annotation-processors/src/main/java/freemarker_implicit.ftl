@@ -1,8 +1,8 @@
 [#ftl]
 [#-- @implicitly included --]
 
-[#function getInheritanceAssociations][/#function]
-[#function getReferenceAssociations][/#function]
+[#function getInheritanceRelations][/#function]
+[#function geAssociations][/#function]
 [#function getIncludeFiles][/#function]
 [#function getAnnotatedFields][/#function]
 [#function simpleTypeName typeMirror][/#function]

@@ -13,6 +13,8 @@ endif::[]
 :toc:
 :toc-placement!:
 
-= Living Documentation Lab
+== Living Documentation Lab
 
 toc::[]
+
+

@@ -3,7 +3,6 @@ plugins {
     id 'io.franzbecker.gradle-lombok'
 }
 
-
 dependencies {
     api project(':annotations')
     api libs.'commons-lang3'
@@ -15,6 +14,12 @@ dependencies {
     testImplementation libs.'junit'
     testImplementation libs.'assertj'
     testImplementation libs.'compile-testing'
+}
+
+test {
+
+    // Pass the current directory to the tests:
+    systemProperty 'project.test.dir', '.'
 }
 
 publishing {

@@ -10,7 +10,7 @@ import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNotes;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagram;
-import com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagramPart;
+import com.comsysto.livingdoc.annotation.processors.plantuml.model.TypePart;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.DiagramId;
 import com.google.auto.service.AutoService;
 import freemarker.cache.ClassTemplateLoader;
@@ -39,9 +39,12 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
+/**
+ * The main processor class that handles top-level annotations for UMl diagrams
+ * (currently only {@link PlantUmlClass}).
+ */
 @SuppressWarnings("unused")
 @SupportedAnnotationTypes("com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -51,7 +54,9 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
     private final Configuration freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_23);
 
     public PlantUmlClassDiagramProcessor() {
-        freemarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(this.getClass(), "."));
+        freemarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(
+            this.getClass(),
+            System.getProperty("template.dir", ".")));
     }
 
     @Override
@@ -63,19 +68,46 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
         return false;
     }
 
+    /**
+     * Process a specific annotation.
+     *
+     * @param annotation the annotation
+     * @param roundEnv   the round environment
+     */
     private void processAnnotation(final TypeElement annotation, final RoundEnvironment roundEnv) {
-        final Set<? extends Element> annotated = roundEnv.getElementsAnnotatedWith(annotation);
-        processPlantumlClass(roundEnv.getElementsAnnotatedWith(annotation)
-                                 .stream()
-                                 .map(TypeElement.class::cast)
-                                 .collect(toSet()));
+        final Set<TypeElement> annotated = roundEnv.getElementsAnnotatedWith(annotation)
+            .stream()
+            .map(TypeElement.class::cast)
+            .collect(toSet());
+
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (annotation.getQualifiedName().toString()) {
+            case "com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass":
+                processPlantumlClassAnnotation(annotated);
+
+                // Here we could add support for additional top-level annotations
+
+            default:
+                log.error(
+                    "Unexpected annotation type: {}. Most likely there is a mismatch between the value of "
+                    + "@SupportedAnnotationTypes and the annotation handling implemented in "
+                    + "PlantUmlClassDiagramProcessor.processAnnotation.",
+                    annotation.getQualifiedName().toString());
+        }
     }
 
-    private void processPlantumlClass(final Set<TypeElement> annotatedTypes) {
-        final Map<DiagramId, List<ClassDiagramPart>> generatedFiles = annotatedTypes.stream()
+    /**
+     * Process the {@link PlantUmlClass} annotation for all types that have this
+     * annotation. The processor will generate one diagram file per unique
+     * diagram ID found on any annotation.
+     *
+     * @param annotatedTypes the annotated types.
+     */
+    private void processPlantumlClassAnnotation(final Set<TypeElement> annotatedTypes) {
+        final Map<DiagramId, List<TypePart>> generatedFiles = annotatedTypes.stream()
             .map(this::createDiagramPart)
             .flatMap(part -> part.getDiagramIds().stream()
-                .map(id -> new ClassDiagramPart(
+                .map(id -> new TypePart(
                     singleton(id),
                     part.getAnnotation(),
                     part.getTypeElement(),
@@ -85,11 +117,11 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
         generatedFiles.keySet().forEach(id -> createDiagram(id, generatedFiles.get(id)));
     }
 
-    private ClassDiagramPart createDiagramPart(final TypeElement annotated) {
+    private TypePart createDiagramPart(final TypeElement annotated) {
         final PlantUmlClass classAnnotation = annotated.getAnnotation(PlantUmlClass.class);
         log.debug("Processing PlantUmlClass annotation on type: {}", annotated);
 
-        return new ClassDiagramPart(
+        return new TypePart(
             stream(classAnnotation.diagramIds()).map(DiagramId::of).collect(toSet()),
             classAnnotation,
             annotated,
@@ -105,18 +137,9 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
                 .orElse(Collections.emptyList()));
     }
 
-
-    private void createDiagram(final DiagramId id, final List<ClassDiagramPart> parts) {
-        final File settingsFile = new File(id.getValue() + "_class.properties");
-        final File outFile      = new File(id.getValue() + "_class.puml");
-
-        Properties settings = new Properties();
-        try (final FileReader in = new FileReader(settingsFile)) {
-            log.debug("Settings file: {}", settingsFile.getAbsoluteFile());
-            settings.load(in);
-        } catch (IOException e) {
-            log.debug("No settings file found: {}", settingsFile.getAbsoluteFile());
-        }
+    private void createDiagram(final DiagramId diagramId, final List<TypePart> parts) {
+        final File       outFile  = new File(diagramId.getValue() + "_class.puml");
+        final Properties settings = loadSettings(diagramId);
 
         try (final BufferedWriter out = new BufferedWriter(new FileWriter(outFile))) {
             final Template template = freemarkerConfiguration.getTemplate("class-diagram.puml.ftl");
@@ -132,6 +155,20 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
             log.error("Failed", e);
             throw new RuntimeException(e);
         }
+    }
+
+    private Properties loadSettings(final DiagramId id) {
+        final File       settingsFile = new File(
+            System.getProperty("settings.dir", "."),
+            id.getValue() + "_class.properties");
+        final Properties settings     = new Properties();
+        try (final FileReader in = new FileReader(settingsFile)) {
+            log.debug("Settings file: {}", settingsFile.getAbsoluteFile());
+            settings.load(in);
+        } catch (IOException e) {
+            log.debug("No settings file found: {}", settingsFile.getAbsoluteFile());
+        }
+        return settings;
     }
 
 }

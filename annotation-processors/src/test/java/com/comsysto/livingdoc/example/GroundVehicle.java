@@ -3,7 +3,7 @@ package com.comsysto.livingdoc.example;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlField;
 
-@PlantUmlClass
+@PlantUmlClass(diagramIds = { "package", "ground-vehicles" })
 public abstract class GroundVehicle extends Vehicle {
 
     @PlantUmlField

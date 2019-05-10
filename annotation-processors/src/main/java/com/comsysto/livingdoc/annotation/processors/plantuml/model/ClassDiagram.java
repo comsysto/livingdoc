@@ -1,8 +1,8 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml.model;
 
-import static com.comsysto.livingdoc.annotation.processors.plantuml.model.AssociationPart.Relation.EXTENDS;
-import static com.comsysto.livingdoc.annotation.processors.plantuml.model.AssociationPart.Relation.IMPLEMENTS;
-import static com.comsysto.livingdoc.annotation.processors.plantuml.model.AssociationPart.Relation.REFERENCES;
+import static com.comsysto.livingdoc.annotation.processors.plantuml.model.RelationPart.Relation.INHERITANCE;
+import static com.comsysto.livingdoc.annotation.processors.plantuml.model.RelationPart.Relation.REALIZATION;
+import static com.comsysto.livingdoc.annotation.processors.plantuml.model.RelationPart.Relation.ASSOCIATION;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
@@ -17,51 +17,96 @@ import java.util.Set;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
 
+/**
+ * Models a class diagram. The methods of this class are manly used by the
+ * corresponding freemarker template (<code>class-diagram.puml.ftl</code>).
+ */
 @SuppressWarnings("unused")
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ClassDiagram extends DefaultObjectWrapper {
 
+    /**
+     * the diagram title.
+     */
     private final String title;
+
+    /**
+     * Any PlantUml files to be included.
+     */
     private final List<String> includeFiles;
-    private final List<ClassDiagramPart> parts;
 
-    public List<AssociationPart> getInheritanceAssociations() {
-        final Set<Name> whitelist = createWhitelist();
+    /**
+     * The type parts to be rendered in this diagram.
+     */
+    private final List<TypePart> parts;
+
+    /**
+     * Get all inheritance or realization relations within this diagram.
+     *
+     * @return the inheritance relations.
+     */
+    public List<RelationPart> getInheritanceRelations() {
+        final Set<Name> whitelist = renderedTypeNames();
 
         return parts.stream()
-            .map(ClassDiagramPart::getAssociations)
+            .map(TypePart::getRelations)
             .flatMap(List::stream)
-            .filter(association -> EnumSet.of(EXTENDS, IMPLEMENTS).contains(association.getRelation()))
-            .filter(association -> isWhiteListed(whitelist, association))
+            .filter(relation -> EnumSet.of(INHERITANCE, REALIZATION).contains(relation.getRelation()))
+            .filter(relation -> shouldBeRendered(relation, whitelist))
             .collect(toList());
     }
 
-    public List<AssociationPart> getReferenceAssociations() {
-        final Set<Name> whitelist = createWhitelist();
+    /**
+     * Get all (field) associations within this diagram.
+     *
+     * @return the list of association relation parts.
+     */
+    public List<RelationPart> getAssociations() {
+        final Set<Name> whitelist = renderedTypeNames();
 
         return parts.stream()
-            .map(ClassDiagramPart::getAssociations)
+            .map(TypePart::getRelations)
             .flatMap(List::stream)
-            .filter(association -> association.getRelation() == REFERENCES)
-            .filter(association -> isWhiteListed(whitelist, association))
+            .filter(relation -> relation.getRelation() == ASSOCIATION)
+            .filter(association -> shouldBeRendered(association, whitelist))
             .collect(toList());
     }
 
+    /**
+     * Get the simple name of a type.
+     *
+     * @param typeMirror the type mirror.
+     *
+     * @return the simple name.
+     */
     public String simpleTypeName(TypeMirror typeMirror) {
         return typeMirror.toString().contains(".")
                ? substringAfterLast(typeMirror.toString(), ".")
                : typeMirror.toString();
     }
 
-    private Set<Name> createWhitelist() {
+    /**
+     * Get the names of all types to be rendered within this diagram.
+     *
+     * @return the list of type names.
+     */
+    private Set<Name> renderedTypeNames() {
         return parts.stream()
             .map(part -> part.getTypeElement().getSimpleName())
             .collect(toSet());
     }
 
-    private boolean isWhiteListed(final Set<Name> whitelist, final AssociationPart association) {
-        return whitelist.stream().anyMatch(name -> name.contentEquals(association.getRight().getSimpleName()))
-               && whitelist.stream().anyMatch(name -> name.contentEquals(association.getLeft().getSimpleName()));
+    /**
+     * Determine if a relation should be rendered in this diagram.
+     *
+     * @param relationPart the relation to be checked.
+     * @param whitelist    the list of type names to be rendered in this diagram.
+     *
+     * @return true if the type should be rendered.
+     */
+    private boolean shouldBeRendered(final RelationPart relationPart, final Set<Name> whitelist) {
+        return whitelist.stream().anyMatch(name -> name.contentEquals(relationPart.getRight().getSimpleName()))
+               && whitelist.stream().anyMatch(name -> name.contentEquals(relationPart.getLeft().getSimpleName()));
     }
 }

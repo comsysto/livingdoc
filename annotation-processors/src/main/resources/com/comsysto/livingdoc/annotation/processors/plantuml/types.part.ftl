@@ -1,6 +1,6 @@
 
 <#macro renderType part>
-<#-- @ftlvariable name="part" type="com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagramPart" -->
+<#-- @ftlvariable name="part" type="com.comsysto.livingdoc.annotation.processors.plantuml.model.TypePart" -->
     <#if part.isInterface()>
         <#local typeDeclaration="interface">
     <#elseif part.isAbstract()>
@@ -26,9 +26,9 @@ end note
 </#macro>
 
 <#macro renderAssociation association>
-    <#if association.relation="EXTENDS">
+    <#if association.relation="INHERITANCE">
         <#local relationOperator="<|--">
-    <#elseif association.relation="IMPLEMENTS">
+    <#elseif association.relation="RELAIZATION">
         <#local relationOperator="<|..">
     <#else>
         <#local relationOperator="-->">
