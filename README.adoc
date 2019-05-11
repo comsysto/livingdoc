@@ -10,11 +10,163 @@ ifndef::env-github[]
 :icons: font
 endif::[]
 
-:toc:
+:toc: 
 :toc-placement!:
 
 == Living Documentation Lab
 
-toc::[]
+=== Motivation
+Documentation is hard. Every programmer knows this. It's also boring and repetitive, and the result often looks ugly
+and is hard to read (because not all programmers are poets). The fact that written documentation is usually outdated
+before it has been finished doesn't make it any better.
+
+Therefore, writing documentation it is usually something programmers try to avoid.
+
+There is a simple truth you will often hear when talking to programmers about documentation: the most accurate
+documentation is the code itself. It's the only thing that won't become outdated, won't lie to you, and will always be
+complete.
+
+But code is difficult to understand. If you have ever tried to learn about a code base without written documentation,
+you'll know that it is very, very hard to glean the truth from it.
+
+==== Living Diagrams
+
+===== History
+The idea to generate UML diagrams from source code is not new. Actually, it has a long history in software development,
+a history that is often quite disappointing. Some examples are:
+
+====== UML tool suites
+There are tools like Together, Rational Rose, Enterprise Architect etc. These often do a decent job generating UML
+diagrams and sometimes even provide full Roundtrip-Engineering capabilities. However, they are usually extremely
+expensive, have a high learning curve and force the development team to fully buy into their proprietary way of working.
+In addition, the resulting diagrams are difficult to integrate into the actual documentation written outside of the tool
+itself, so often users will find themeselves resorting to pasting image files that are - again - difficult to keep
+up-to-date.
+
+====== IDEs
+// IntelliJ, Netbeans, Eclipse
+====== Dedicated generators
+// e.g. https://github.com/gboersma/uml-java-doclet
+
+=== The PlantUML Class Diagram Generator
+Our generator is different from all theses examples because it follows the ideas of Living Documentation.
+
+==== Design principles
+The generator is designed around a limited set of principles derived from the idea of Living Documentation:
+
+Relevance::
+The programmer decides what elements from the sources should show up in generated diagrams, so they are always relevant
+to the documentation
+Proximity::
+Diagram controls are an intrinsic part of the source code
+Configurability::
+Diagram Controls give the developer a lot of control over what is generated
+Currentness::
+Diagrams are re-generated with every build
+
+==== PlantUML annotation library
+At the moment, the annotation library contains only a few annotations that can be used for class diagrams:
+
+link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlClass.java[@PlantUmlClass]::
+This is the main annotation to be used for class diagrams. When added to a Java type (interface, class or enum), a
+representation of this type is included in one or more diagrams
+link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlField.java[@PlantUmlField]::
+This annotation may be added to a field within a type already annotated with **@PlantUmlClass**. It will render the
+field as part of the class body and/or add an association to the field's type, provided that type is also part of the
+diagram
+link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlNote.java[@PlantUmlNote]::
+This annotation may be used to associate one or more UML notes with a type, providing further textual description
+
+==== PlantUML annotation processor
+The annotation processor is a normal Java annotation processor that can be included easily as a Java compiler argument -
+either using the programmer's favorite Java IDE's project configuration, or as part of the build process.
+The annotation processor produces a model of the elements to be rendered in the resulting diagrams and then outputs the
+PlantUML source code.
+
+===== PlantUML diagram model
+
+ifdef::env-github[]
+image::annotation-proessor_class[Annotation processor classes]
+endif::[]
+
+[plantuml,"annotation-proessor_class",png]
+--
+@startuml
+!include format.iuml
+hide empty members
+
+class PlantUmlClassDiagramProcessor {
+    + boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
+}
+
+class ClassDiagram {
+    + String title
+    + List<String> includeFiles
+    + List<TypePart> parts
+
+    + String simpleTypeName(TypeMirror typeMirror)
+    + List<RelationPart> getInheritanceRelations()
+    + List<RelationPart> getAssociations()
+}
+
+class TypePart {
+    + Set<String> diagramIds
+    + PlantUmlClass annotation
+    + TypeElement typeElement
+    + List<PlantUmlNote> notes
+
+    + String getName()
+    + List<RelationPart> getRelations()
+    + List<RelationPart> getAssociations()
+    + List<VariableElement> getAnnotatedFields()
+    + Optional<RelationPart> getSuperClassAssociation()
+    + boolean isInterface()
+    + boolean isAbstract()
+    + boolean isEnum()
+}
+
+class RelationPart {
+    + RelationId id
+    + TypeElement left
+    + TypeElement right
+    + Relation relation
+}
+
+note right of ClassDiagram
+Used as input for a freemarker template
+that uses the provided fields and methods
+end note
+
+enum Relation {
+    REALIZATION
+    INHERITANCE
+    ASSOCIATION
+}
+
+PlantUmlClassDiagramProcessor ..> ClassDiagram: generates/processes
+ClassDiagram --> "0..*" TypePart
+ClassDiagram --> "0..*" RelationPart
+RelationPart -> Relation
+
+@enduml
+--
+
+NOTE: It may occur to the reader that the diagram above is a handwritten PlantUML class diagram - it hasn't been
+auto-generated using the annotation processor. So, why are we not 'eating our own dog food' here?
+The reason is simple: while it is possible to use an annotation processor on itself, it's definitely not a good idea
+because a functional error in the processor or its templates might stop the code from compiling and create a cyclic
+issue that is difficult to debug.
+
+=== Example
+As an example, the test sources contain an artificial class hierarchy that models different types of vehicles. The
+following diagram is auto-generated using the annotation processor - you can verify this by changing something in the
+code and re-run the build:
+
+[plantuml,"annotation-processors/out/package_class",png]
+--
+include::annotation-processors/out/package_class.puml[]
+--
+
+
 
 

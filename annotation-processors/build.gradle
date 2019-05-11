@@ -16,9 +16,15 @@ dependencies {
     testImplementation libs.'compile-testing'
 }
 
+task copyFormat(type: Copy) {
+    from file("./format.iuml")
+    into file("out")
+}
+
 test {
     systemProperty 'pumlgen.test.dir', './src/test/java'
 }
+tasks.test.dependsOn("copyFormat")
 
 publishing {
     publications {

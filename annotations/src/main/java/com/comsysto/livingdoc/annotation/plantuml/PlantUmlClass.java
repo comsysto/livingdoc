@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to be attache to a type that should be rendered as part of one or
+ * Annotation to be attached to a type that should be rendered as part of one or
  * more <a href="http://plantuml.com/class-diagram">PlantUML class diagram</a>s.
  */
 @Retention(RetentionPolicy.RUNTIME)

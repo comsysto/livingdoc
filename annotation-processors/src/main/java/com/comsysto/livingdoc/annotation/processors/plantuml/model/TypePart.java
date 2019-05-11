@@ -97,7 +97,7 @@ public class TypePart {
      *
      * @return the association relation part.
      */
-    private Optional<RelationPart> associationPart(final VariableElement field) {
+    public Optional<RelationPart> associationPart(final VariableElement field) {
         return toTypeElement(field.asType())
             .map(typeElement -> new RelationPart(
                 new RelationId(field.getSimpleName().toString()),
