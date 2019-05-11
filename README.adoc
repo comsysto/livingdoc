@@ -86,10 +86,10 @@ PlantUML source code.
 ===== PlantUML diagram model
 
 ifdef::env-github[]
-image::annotation-proessor_class[Annotation processor classes]
+image::annotation-processor_class.png[Annotation processor classes]
 endif::[]
-
-[plantuml,"annotation-proessor_class",png]
+ifndef::env-github[]
+[plantuml,"annotation-processor_class",png]
 --
 @startuml
 !include format.iuml
@@ -150,6 +150,7 @@ RelationPart -> Relation
 
 @enduml
 --
+endif::[]
 
 NOTE: It may occur to the reader that the diagram above is a handwritten PlantUML class diagram - it hasn't been
 auto-generated using the annotation processor. So, why are we not 'eating our own dog food' here?
