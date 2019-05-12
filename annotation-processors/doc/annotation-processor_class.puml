@@ -1,0 +1,58 @@
+@startuml
+!include ../format.iuml
+hide empty members
+
+class PlantUmlClassDiagramProcessor {
+    + boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
+}
+
+class ClassDiagram {
+    + String title
+    + List<String> includeFiles
+    + List<TypePart> parts
+
+    + String simpleTypeName(TypeMirror typeMirror)
+    + List<RelationPart> getInheritanceRelations()
+    + List<RelationPart> getAssociations()
+}
+
+class TypePart {
+    + Set<String> diagramIds
+    + PlantUmlClass annotation
+    + TypeElement typeElement
+    + List<PlantUmlNote> notes
+
+    + String getName()
+    + List<RelationPart> getRelations()
+    + List<RelationPart> getAssociations()
+    + List<VariableElement> getAnnotatedFields()
+    + Optional<RelationPart> getSuperClassAssociation()
+    + boolean isInterface()
+    + boolean isAbstract()
+    + boolean isEnum()
+}
+
+class RelationPart {
+    + RelationId id
+    + TypeElement left
+    + TypeElement right
+    + Relation relation
+}
+
+note right of ClassDiagram
+Used as input for a freemarker template
+that uses the provided fields and methods
+end note
+
+enum Relation {
+    REALIZATION
+    INHERITANCE
+    ASSOCIATION
+}
+
+PlantUmlClassDiagramProcessor ..> ClassDiagram: generates/processes
+ClassDiagram --> "0..*" TypePart
+ClassDiagram --> "0..*" RelationPart
+RelationPart -> Relation
+
+@enduml

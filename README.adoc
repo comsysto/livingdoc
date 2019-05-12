@@ -1,3 +1,5 @@
+:imagesoutdir: .
+
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -86,70 +88,11 @@ PlantUML source code.
 ===== PlantUML diagram model
 
 ifdef::env-github[]
-image::annotation-proessor_class[Annotation processor classes]
+image::annotation-processors/doc/annotation-processor_class.png[Annotation processor classes]
 endif::[]
-
-[plantuml,"annotation-proessor_class",png]
---
-@startuml
-!include format.iuml
-hide empty members
-
-class PlantUmlClassDiagramProcessor {
-    + boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
-}
-
-class ClassDiagram {
-    + String title
-    + List<String> includeFiles
-    + List<TypePart> parts
-
-    + String simpleTypeName(TypeMirror typeMirror)
-    + List<RelationPart> getInheritanceRelations()
-    + List<RelationPart> getAssociations()
-}
-
-class TypePart {
-    + Set<String> diagramIds
-    + PlantUmlClass annotation
-    + TypeElement typeElement
-    + List<PlantUmlNote> notes
-
-    + String getName()
-    + List<RelationPart> getRelations()
-    + List<RelationPart> getAssociations()
-    + List<VariableElement> getAnnotatedFields()
-    + Optional<RelationPart> getSuperClassAssociation()
-    + boolean isInterface()
-    + boolean isAbstract()
-    + boolean isEnum()
-}
-
-class RelationPart {
-    + RelationId id
-    + TypeElement left
-    + TypeElement right
-    + Relation relation
-}
-
-note right of ClassDiagram
-Used as input for a freemarker template
-that uses the provided fields and methods
-end note
-
-enum Relation {
-    REALIZATION
-    INHERITANCE
-    ASSOCIATION
-}
-
-PlantUmlClassDiagramProcessor ..> ClassDiagram: generates/processes
-ClassDiagram --> "0..*" TypePart
-ClassDiagram --> "0..*" RelationPart
-RelationPart -> Relation
-
-@enduml
---
+ifndef::env-github[]
+plantuml::annotation-processors/doc/annotation-processor_class.puml[imagesoutdir="./annotation-processors/doc"]
+endif::[]
 
 NOTE: It may occur to the reader that the diagram above is a handwritten PlantUML class diagram - it hasn't been
 auto-generated using the annotation processor. So, why are we not 'eating our own dog food' here?
@@ -162,11 +105,44 @@ As an example, the test sources contain an artificial class hierarchy that model
 following diagram is auto-generated using the annotation processor - you can verify this by changing something in the
 code and re-run the build:
 
-[plantuml,"annotation-processors/out/package_class",png]
---
-include::annotation-processors/out/package_class.puml[]
---
+ifdef::env-github[]
+image::annotation-processors/doc/package_class.png[Annotation processor classes]
+endif::[]
+ifndef::env-github[]
+plantuml::annotation-processors/out/package_class.puml[imagesoutdir="./annotation-processors/doc"]
+endif::[]
 
+== What's next?
+The first version of something is seldom perfect. There is a lot more that could be done:
+
+* Support for additional class diagram elements
+* Support for other diagram types
+* Refactoring
+
+=== Support for additional class diagram elements
+
+While the feature set supported by the annotation processor is enough
+to use it in a productive way, the limits of what may be rendered into the resulting class diagrams are still obvious.
+For example, there is no support yet for:
+
+* Methods
+* Relation notes
+* Special associations like aggregation and composition
+* Floating notes
+* Generics
+* Stereotypes
+* ...
+
+=== Support for other diagram types
+
+For us, generating class diagrams is only a first step. Going further, we'd like to investigate rendering other diagram
+types. The class diagram was the obvious place to start, since its features closely match the information that can be
+gleaned from the information harvested by the annotation processing environment.
+
+=== Refactoring
+
+The current model can be extended to support at least some of those things. We may, however, reach a point in the future
+where our first shot at modelling reaches its limits
 
 
 
