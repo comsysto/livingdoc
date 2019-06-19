@@ -3,6 +3,7 @@ package com.comsysto.livingdoc.example;
 import static com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote.Position.BOTTOM;
 
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlField;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
 
@@ -17,4 +18,27 @@ public class Airplane extends FlyingVehicle {
 
     @PlantUmlField
     Wing rightWing;
+
+    @Override
+    public void launch() {
+        super.launch();
+        retractWheels();
+    }
+
+    @PlantUmlExecutable
+    private void retractWheels() {
+    }
+
+    @Override
+    public void land() {
+        lowerWheels();
+        super.land();
+    }
+
+    private void lowerWheels() {
+    }
+
+    public void load() {
+        
+    }
 }

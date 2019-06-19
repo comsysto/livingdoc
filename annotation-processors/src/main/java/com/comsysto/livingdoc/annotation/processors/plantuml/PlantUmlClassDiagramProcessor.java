@@ -9,16 +9,20 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNotes;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagram;
-import com.comsysto.livingdoc.annotation.processors.plantuml.model.TypePart;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.DiagramId;
+import com.comsysto.livingdoc.annotation.processors.plantuml.model.ExecutablePart;
+import com.comsysto.livingdoc.annotation.processors.plantuml.model.SequenceDiagram;
+import com.comsysto.livingdoc.annotation.processors.plantuml.model.TypePart;
 import com.google.auto.service.AutoService;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +46,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
 /**
@@ -49,7 +54,10 @@ import javax.lang.model.element.TypeElement;
  * (currently only {@link PlantUmlClass}).
  */
 @SuppressWarnings("unused")
-@SupportedAnnotationTypes("com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass")
+@SupportedAnnotationTypes({
+                              "com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass",
+                              "com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable"
+                          })
 @SupportedOptions({KEY_SETTINGS_DIR, KEY_OUT_DIR})
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
@@ -89,18 +97,22 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
      * @param roundEnv   the round environment
      */
     private void processAnnotation(final TypeElement annotation, final RoundEnvironment roundEnv) {
-        final Set<TypeElement> annotated = roundEnv.getElementsAnnotatedWith(annotation)
-            .stream()
-            .map(TypeElement.class::cast)
-            .collect(toSet());
-
-        //noinspection SwitchStatementWithTooFewBranches
         switch (annotation.getQualifiedName().toString()) {
             case "com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass":
-                processPlantumlClassAnnotation(annotated);
+                final Set<TypeElement> annotatedTypes = roundEnv.getElementsAnnotatedWith(annotation)
+                    .stream()
+                    .map(TypeElement.class::cast)
+                    .collect(toSet());
+
+                processPlantumlClassAnnotation(annotatedTypes);
                 break;
 
-            // Here we could add support for additional top-level annotations
+            case "com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable":
+                final Set<ExecutableElement> annotatedExecutables = roundEnv.getElementsAnnotatedWith(annotation)
+                    .stream()
+                    .map(ExecutableElement.class::cast)
+                    .collect(toSet());
+                processPlantumlExecutableAnnotation(annotatedExecutables);
 
             default:
                 log.error(
@@ -129,31 +141,11 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
                     part.getNotes())))
             .collect(groupingBy(part -> part.getDiagramIds().stream().findFirst().get()));
 
-        generatedFiles.keySet().forEach(id -> createDiagram(id, generatedFiles.get(id)));
+        generatedFiles.keySet().forEach(id -> createClassDiagram(id, generatedFiles.get(id)));
     }
 
-    private TypePart createDiagramPart(final TypeElement annotated) {
-        final PlantUmlClass classAnnotation = annotated.getAnnotation(PlantUmlClass.class);
-        log.debug("Processing PlantUmlClass annotation on type: {}", annotated);
-
-        return new TypePart(
-            stream(classAnnotation.diagramIds()).map(DiagramId::of).collect(toSet()),
-            classAnnotation,
-            annotated,
-            getNoteAnnotations(annotated));
-    }
-
-    private List<PlantUmlNote> getNoteAnnotations(final TypeElement annotated) {
-        return Optional.ofNullable(annotated.getAnnotation(PlantUmlNotes.class))
-            .map(PlantUmlNotes::value)
-            .map(Arrays::asList)
-            .orElseGet(() -> Optional.ofNullable(annotated.getAnnotation(PlantUmlNote.class))
-                .map(Collections::singletonList)
-                .orElse(Collections.emptyList()));
-    }
-
-    private void createDiagram(final DiagramId diagramId, final List<TypePart> parts) {
-        final File       outFile  = getOutFile(diagramId);
+    private void createClassDiagram(final DiagramId diagramId, final List<TypePart> parts) {
+        final File outFile = getOutFile(diagramId);
         final Properties settings = loadSettings(diagramId);
 
         log.debug("Create PlantUML diagram: {}", outFile);
@@ -172,6 +164,74 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
             log.error("Failed to generate diagram: " + outFile, e);
             throw new RuntimeException(e);
         }
+    }
+
+    private TypePart createDiagramPart(final TypeElement annotated) {
+        final PlantUmlClass classAnnotation = annotated.getAnnotation(PlantUmlClass.class);
+        log.debug("Processing PlantUmlClass annotation on type: {}", annotated);
+
+        return new TypePart(
+            stream(classAnnotation.diagramIds()).map(DiagramId::of).collect(toSet()),
+            classAnnotation,
+            annotated,
+            getNoteAnnotations(annotated));
+    }
+
+    private void processPlantumlExecutableAnnotation(final Set<ExecutableElement> annotatedExecutables) {
+        final Map<DiagramId, List<ExecutablePart>> generatedFiles = annotatedExecutables.stream()
+            .map(this::createDiagramPart)
+            .flatMap(part -> part.getDiagramIds().stream()
+                .map(id -> new ExecutablePart(
+                    processingEnv,
+                    singleton(id),
+                    part.getAnnotation(),
+                    part.getAnnotated())))
+            .collect(groupingBy(part -> part.getDiagramIds().stream().findFirst().get()));
+
+        generatedFiles.keySet().forEach(id -> createSequenceDiagram(id, generatedFiles.get(id)));
+    }
+
+    @SneakyThrows
+    private void createSequenceDiagram(final DiagramId diagramId, final List<ExecutablePart> parts) {
+        final File outFile = getOutFile(diagramId);
+        final Properties settings = loadSettings(diagramId);
+
+        log.debug("Create PlantUML diagram: {}", outFile);
+
+        try (final BufferedWriter out = new BufferedWriter(new FileWriter(outFile))) {
+            final Template template = freemarkerConfiguration.getTemplate("sequence-diagram.puml.ftl");
+            template.process(
+                new SequenceDiagram(
+                    settings.getProperty("title", null),
+                    stream(settings.getProperty("include.files", "").split(","))
+                        .filter(StringUtils::isNoneBlank)
+                        .collect(toList()),
+                    parts),
+                out);
+        } catch (IOException | TemplateException e) {
+            log.error("Failed to generate diagram: " + outFile, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ExecutablePart createDiagramPart(final ExecutableElement annotated) {
+        final PlantUmlExecutable annotation = annotated.getAnnotation(PlantUmlExecutable.class);
+        log.debug("Processing PlantUmlExecutable annotation on executable: {}", annotated);
+
+        return new ExecutablePart(
+            processingEnv,
+            stream(annotation.diagramIds()).map(DiagramId::of).collect(toSet()),
+            annotation,
+            annotated);
+    }
+
+    private List<PlantUmlNote> getNoteAnnotations(final TypeElement annotated) {
+        return Optional.ofNullable(annotated.getAnnotation(PlantUmlNotes.class))
+            .map(PlantUmlNotes::value)
+            .map(Arrays::asList)
+            .orElseGet(() -> Optional.ofNullable(annotated.getAnnotation(PlantUmlNote.class))
+                .map(Collections::singletonList)
+                .orElse(Collections.emptyList()));
     }
 
     private File getOutFile(final DiagramId diagramId) {

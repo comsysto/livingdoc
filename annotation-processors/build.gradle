@@ -7,6 +7,8 @@ dependencies {
     api project(':annotations')
     api libs.'commons-lang3'
     api libs.'freemarker'
+    api libs.'javaparser'
+    api libs.'javasymbolsolver'
     api libs.'auto-service'
     api libs.'slf4j-api'
     api libs.'slf4j'
