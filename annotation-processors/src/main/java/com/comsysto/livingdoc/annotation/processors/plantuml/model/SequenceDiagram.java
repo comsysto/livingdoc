@@ -1,7 +1,9 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml.model;
 
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 
+import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import lombok.Value;
 
 import java.util.List;
@@ -29,5 +31,14 @@ public class SequenceDiagram {
         return parts.stream()
             .map(part -> part.getAnnotated().getEnclosingElement().asType())
             .map(ClassDiagram::simpleTypeName).collect(toSet());
+    }
+
+
+    public static String getTargetClassName(final ResolvedMethodDeclaration methodDeclaration) {
+        return substringBeforeLast(methodDeclaration.getClassName(), ".");
+    }
+
+    public static String signature(final ResolvedMethodDeclaration methodDeclaration) {
+        return methodDeclaration.getSignature();
     }
 }

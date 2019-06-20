@@ -1,6 +1,7 @@
 package com.comsysto.livingdoc.example;
 
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable.StartOfSequence;
 
 public class Flight {
 
@@ -9,6 +10,7 @@ public class Flight {
     private Airplane airplane;
 
     @PlantUmlExecutable
+    @StartOfSequence
     public void execute() {
         airport.load(airplane);
 

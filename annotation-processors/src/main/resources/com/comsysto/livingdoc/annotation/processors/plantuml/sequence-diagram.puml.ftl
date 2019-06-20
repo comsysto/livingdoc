@@ -13,11 +13,6 @@
 </#list>
 
 <#list parts as part>
-    <#assign typename=part.getDeclaringType().simpleName/>
-    activate ${typename}
-    <#list part.parse() as methodCall>
-        ${methodCall}
-    </#list>
-    deactivate ${typename}
+${part.render()}
 </#list>
 @enduml

@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * notes may be attached to the same type.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
 @Repeatable(PlantUmlNotes.class)
 public @interface PlantUmlNote {
 

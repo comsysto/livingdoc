@@ -56,7 +56,7 @@ import javax.lang.model.element.TypeElement;
 @SuppressWarnings("unused")
 @SupportedAnnotationTypes({
                               "com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass",
-                              "com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable"
+                              "com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable.StartOfSequence"
                           })
 @SupportedOptions({KEY_SETTINGS_DIR, KEY_OUT_DIR})
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -107,12 +107,12 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
                 processPlantumlClassAnnotation(annotatedTypes);
                 break;
 
-            case "com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable":
+            case "com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable.StartOfSequence":
                 final Set<ExecutableElement> annotatedExecutables = roundEnv.getElementsAnnotatedWith(annotation)
                     .stream()
                     .map(ExecutableElement.class::cast)
                     .collect(toSet());
-                processPlantumlExecutableAnnotation(annotatedExecutables);
+                processPlantumlSequenceStartAnnotation(annotatedExecutables);
 
             default:
                 log.error(
@@ -177,7 +177,7 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
             getNoteAnnotations(annotated));
     }
 
-    private void processPlantumlExecutableAnnotation(final Set<ExecutableElement> annotatedExecutables) {
+    private void processPlantumlSequenceStartAnnotation(final Set<ExecutableElement> annotatedExecutables) {
         final Map<DiagramId, List<ExecutablePart>> generatedFiles = annotatedExecutables.stream()
             .map(this::createDiagramPart)
             .flatMap(part -> part.getDiagramIds().stream()
@@ -206,7 +206,7 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
                     stream(settings.getProperty("include.files", "").split(","))
                         .filter(StringUtils::isNoneBlank)
                         .collect(toList()),
-                    parts),
+                    parts.stream().sorted().collect(toList())),
                 out);
         } catch (IOException | TemplateException e) {
             log.error("Failed to generate diagram: " + outFile, e);
@@ -220,7 +220,9 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
 
         return new ExecutablePart(
             processingEnv,
-            stream(annotation.diagramIds()).map(DiagramId::of).collect(toSet()),
+            stream(annotation.diagramIds())
+                .map(DiagramId::of)
+                .collect(toSet()),
             annotation,
             annotated);
     }
@@ -235,7 +237,7 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
     }
 
     private File getOutFile(final DiagramId diagramId) {
-        final File diagramFile = new File(outDir, diagramId.getValue() + "_class.puml");
+        final File diagramFile = new File(outDir, diagramId.getValue() + "_sequence.puml");
 
         //noinspection ResultOfMethodCallIgnored
         diagramFile.getParentFile().mkdirs();
