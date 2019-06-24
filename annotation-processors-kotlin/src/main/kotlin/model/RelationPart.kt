@@ -5,25 +5,23 @@ import javax.lang.model.element.TypeElement
 /**
  * A diagram part that represents a relation between two type elements.
  */
-data class RelationPart(val id: RelationId, val left: TypeElement, val right: TypeElement, val relation: Relation) {
-    fun render() = "${left.simpleName} ${relation.rendered} ${right.simpleName}"
-}
+data class RelationPart(val id: RelationId, val left: TypeElement, val right: TypeElement, val relation: Relation)
 
-enum class Relation(val rendered: String) {
+enum class Relation {
 
     /**
      * The right type realizes (implements) the left type.
      */
-    REALIZATION("<|.."),
+    REALIZATION,
 
     /**
      * The right type extends the left type.
      */
-    INHERITANCE("<|--"),
+    INHERITANCE,
 
     /**
      * The left type references the right type in form of a directed
      * association.
      */
-    ASSOCIATION("-->")
+    ASSOCIATION
 }

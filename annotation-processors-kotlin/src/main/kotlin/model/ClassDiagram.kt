@@ -80,18 +80,8 @@ class ClassDiagram(
                 && whitelist.any { name -> name.contentEquals(relationPart.left.simpleName) }
     }
 
-    fun render() = """
-        @startuml
-        !include $includeFiles
-        hide empty members
-        ${title.let { "title $title" }}
-        ${parts.forEach { it.render() }}
-        ${inheritanceRelations.forEach { it.render() }}
-        ${associations.forEach { it.render() }}
-        @enduml
-        """
-
     companion object {
+
         /**
          * Get the simple name of a type.
          *

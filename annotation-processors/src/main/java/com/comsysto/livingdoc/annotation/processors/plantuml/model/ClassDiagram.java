@@ -89,7 +89,7 @@ public class ClassDiagram extends DefaultObjectWrapper {
      *
      * @return the simple name.
      */
-    public String simpleTypeName(TypeMirror typeMirror) {
+    public static String simpleTypeName(TypeMirror typeMirror) {
         return typeMirror.toString().contains(".")
                ? substringAfterLast(typeMirror.toString(), ".")
                : typeMirror.toString();

@@ -1,4 +1,5 @@
-:imagesoutdir: .
+:imagesoutdir: doc/images
+:imagesdir: doc/images
 
 ifdef::env-github[]
 :tip-caption: :bulb:
@@ -18,11 +19,11 @@ endif::[]
 == Living Documentation Lab
 
 === Motivation
-Documentation is hard. Every programmer knows this. It's also boring and repetitive, and the result often looks ugly
+Documentation is hard - every programmer knows this. It's also boring and repetitive, and the result often looks ugly
 and is hard to read (because not all programmers are poets). The fact that written documentation is usually outdated
 before it has been finished doesn't make it any better.
 
-Therefore, writing documentation it is usually something programmers try to avoid.
+Therefore, writing documentation is usually something programmers try to avoid.
 
 There is a simple truth you will often hear when talking to programmers about documentation: the most accurate
 documentation is the code itself. It's the only thing that won't become outdated, won't lie to you, and will always be
@@ -34,21 +35,29 @@ you'll know that it is very, very hard to glean the truth from it.
 ==== Living Diagrams
 
 ===== History
-The idea to generate UML diagrams from source code is not new. Actually, it has a long history in software development,
+The idea to generate diagrams from source code is not new, but has a long history in software development,
 a history that is often quite disappointing. Some examples are:
+
+* UML tool suites
+* IDEs
+* Dedicated Generators
 
 ====== UML tool suites
 There are tools like Together, Rational Rose, Enterprise Architect etc. These often do a decent job generating UML
-diagrams and sometimes even provide full Roundtrip-Engineering capabilities. However, they are usually extremely
-expensive, have a high learning curve and force the development team to fully buy into their proprietary way of working.
+diagrams and sometimes even provide full Roundtrip-Engineering capabilities. However, they are usually very
+expensive, have a significant learning curve and force the development team to fully buy into their proprietary way of
+working.
 In addition, the resulting diagrams are difficult to integrate into the actual documentation written outside of the tool
-itself, so often users will find themeselves resorting to pasting image files that are - again - difficult to keep
+itself, so often users will find themselves resorting to pasting image files that are - again - difficult to keep
 up-to-date.
 
 ====== IDEs
 // IntelliJ, Netbeans, Eclipse
+include::doc/under-construction.adoc[]
+
 ====== Dedicated generators
 // e.g. https://github.com/gboersma/uml-java-doclet
+include::doc/under-construction.adoc[]
 
 === The PlantUML Class Diagram Generator
 Our generator is different from all theses examples because it follows the ideas of Living Documentation.
@@ -91,7 +100,7 @@ ifdef::env-github[]
 image::annotation-processors/doc/annotation-processor_class.png[Annotation processor classes]
 endif::[]
 ifndef::env-github[]
-plantuml::annotation-processors/doc/annotation-processor_class.puml[imagesoutdir="./annotation-processors/doc"]
+plantuml::annotation-processors/doc/annotation-processor_class.puml[]
 endif::[]
 
 NOTE: It may occur to the reader that the diagram above is a handwritten PlantUML class diagram - it hasn't been

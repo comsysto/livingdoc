@@ -3,9 +3,11 @@ package com.comsysto.livingdoc.example;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
 
 @PlantUmlClass
-public class FlyingVehicle extends Vehicle implements Flying {
+public interface Flying {
 
-    @Override
-    public void fly() {
-    }
+    void launch();
+
+    void fly();
+
+    void land();
 }

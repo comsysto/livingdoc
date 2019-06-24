@@ -3,11 +3,12 @@ package com.comsysto.livingdoc.kotlin.annotation.processors
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNotes
-import com.comsysto.livingdoc.kotlin.annotation.processors.PlantUmlClassDiagramProcessor.KEY_OUT_DIR
-import com.comsysto.livingdoc.kotlin.annotation.processors.PlantUmlClassDiagramProcessor.KEY_SETTINGS_DIR
+import com.comsysto.livingdoc.kotlin.annotation.processors.PlantUmlDiagramProcessor.KEY_OUT_DIR
+import com.comsysto.livingdoc.kotlin.annotation.processors.PlantUmlDiagramProcessor.KEY_SETTINGS_DIR
 import com.comsysto.livingdoc.kotlin.annotation.processors.model.ClassDiagram
 import com.comsysto.livingdoc.kotlin.annotation.processors.model.DiagramId
 import com.comsysto.livingdoc.kotlin.annotation.processors.model.TypePart
+import com.comsysto.livingdoc.kotlin.annotation.processors.render.plantuml.PlantUmlClassDiagramRenderer.renderDiagram
 import com.google.auto.service.AutoService
 import org.slf4j.LoggerFactory
 import java.io.*
@@ -20,11 +21,11 @@ import javax.lang.model.element.TypeElement
 @SupportedOptions(KEY_SETTINGS_DIR, KEY_OUT_DIR)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor::class)
-object PlantUmlClassDiagramProcessor : AbstractProcessor() {
-    private val log = LoggerFactory.getLogger(PlantUmlClassDiagramProcessor.javaClass.name);
+object PlantUmlDiagramProcessor : AbstractProcessor() {
+    private val log = LoggerFactory.getLogger(PlantUmlDiagramProcessor.javaClass.name);
 
     const val KEY_SETTINGS_DIR = "pumlgen.settings.dir"
-    const val DEF_SETTINGS_DIR = "."
+    const val DEF_SETTINGS_DIR = ".."
     const val KEY_OUT_DIR = "pumlgen.out.dir"
     const val DEF_OUT_DIR = "./out"
 
@@ -60,7 +61,7 @@ object PlantUmlClassDiagramProcessor : AbstractProcessor() {
             else -> log.error(
                     "Unexpected annotation type: {}. Most likely there is a mismatch between the value of "
                             + "@SupportedAnnotationTypes and the annotation handling implemented in "
-                            + "PlantUmlClassDiagramProcessor.processAnnotation.",
+                            + "PlantUmlDiagramProcessor.processAnnotation.",
                     annotation.qualifiedName.toString())
         }
     }
@@ -108,13 +109,14 @@ object PlantUmlClassDiagramProcessor : AbstractProcessor() {
 
         try {
             BufferedWriter(FileWriter(outFile)).use { out ->
-                ClassDiagram(
+                val classDiagram = ClassDiagram(
                         settings.getProperty("title", null),
                         settings.getProperty("include.files", "")
                                 .split(",")
                                 .dropLastWhile { it.isEmpty() },
                         parts
-                ).render()
+                )
+                out.write(renderDiagram(classDiagram))
             }
         } catch (e: IOException) {
             log.error("Failed to generate diagram: $outFile", e)

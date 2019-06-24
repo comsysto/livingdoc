@@ -2,8 +2,6 @@ package com.comsysto.livingdoc.example;
 
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
 
-@PlantUmlClass
-public interface Flying {
-
-    void fly();
+@PlantUmlClass(diagramIds = { "package", "ground-vehicles" })
+public class Car extends GroundVehicle {
 }

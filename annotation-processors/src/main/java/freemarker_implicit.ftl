@@ -6,3 +6,6 @@
 [#function getIncludeFiles][/#function]
 [#function getAnnotatedFields][/#function]
 [#function simpleTypeName typeMirror][/#function]
+[#function typeNames][/#function]
+[#function getTargetClassName resolvedMethodDeclaration][/#function]
+[#function signature methodDeclaration][/#function]

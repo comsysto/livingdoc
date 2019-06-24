@@ -31,22 +31,22 @@ public class TypePart {
      * The IDs of the diagrams that should render this type part (please note
      * this may not be equal to the diagram IDs in the annotation).
      */
-    private final Set<DiagramId> diagramIds;
+    Set<DiagramId> diagramIds;
 
     /**
      * The {@link PlantUmlClass} annotation attached to the type.
      */
-    private final PlantUmlClass annotation;
+    PlantUmlClass annotation;
 
     /**
      * The type element that models the type.
      */
-    private final TypeElement typeElement;
+    TypeElement typeElement;
 
     /**
      * A list of notes associated with this type.
      */
-    private final List<PlantUmlNote> notes;
+    List<PlantUmlNote> notes;
 
     public String getName() {
         return typeElement.getSimpleName().toString();

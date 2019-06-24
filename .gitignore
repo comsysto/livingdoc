@@ -80,3 +80,5 @@ grc
 build/**
 */build/**
 package_class.puml
+.attach_pid*
+*.out

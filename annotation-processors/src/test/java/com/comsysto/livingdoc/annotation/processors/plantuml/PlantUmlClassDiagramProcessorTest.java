@@ -41,7 +41,7 @@ public class PlantUmlClassDiagramProcessorTest {
         final File testRoot = Optional.ofNullable(System.getProperty(TEST_DIR))
             .map(File::new)
             .orElseGet(this::getTestClassLoaderRoot);
-        exampleDir = new File(testRoot, "com/comsysto/livingdoc/example");
+        exampleDir = new File(testRoot, "example");
     }
 
     @SneakyThrows

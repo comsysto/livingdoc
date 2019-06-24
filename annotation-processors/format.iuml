@@ -1,3 +1,12 @@
+!definelong CALL(S, T, M, R)
+S -> T: M
+    activate T
+    T --> S: R
+    deactivate T
+!enddefinelong
+
+skinParam componentStyle uml2
+
 skinparam class {
 	BackgroundColor #F0F0F0/#C0C0C0
 	BorderColor grey
@@ -8,6 +17,150 @@ skinparam class {
 	BackgroundColor<<modified>> #e6e6ff/#b3b3ff
 	BackgroundColor<<required>> #ffd700/yellow
     BorderColor<<required>> orange
+	BackgroundColor<<virtual>> #ffffff
+    BorderColor<<virtual>> #ffffff
+	BackgroundColor<<mapping>> #FFFFAA
+    BorderColor<<mapping>> #FFFFAA
+	ArrowColor black
+}
+
+hide empty members
+hide <<virtual>> circle
+hide <<mapping>> circle
+
+skinparam object {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam entity {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam control {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam database {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam component {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+	BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam rectangle {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam interface {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam boundary {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam node {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam cloud {
+	BackgroundColor #CFE9F1
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam sequence {
+    BoxBackgroundColor #FAFAFA
+    BoxBorderColor grey
+	ArrowColor black
+	ActorBorderColor grey
+	LifeLineBorderColor black
+	LifeLineBackgroundColor #E0E0E0|#FFFFFF
+
+	ParticipantBorderColor grey
+	ParticipantBackgroundColor #F0F0F0/#C0C0C0
+	ParticipantBorderColor<<new>> green
+	ParticipantBackgroundColor<<new>> #e6ffe6/#b3ffb3
+	ParticipantBorderColor<<new_in_context>> green
+	ParticipantBorderColor<<modified>> blue
+	ParticipantBackgroundColor<<modified>> #e6e6ff/#b3b3ff
+	ParticipantBackgroundColor<<required>> #ffd700/yellow
+    ParticipantBorderColor<<required>> orange
+	ParticipantFontColor black
+
+	ActorBackgroundColor #F0F0F0/#C0C0C0
+    ActorBackgroundColor<<new>> #e6ffe6/#b3ffb3
+}
+
+skinparam usecase {
+    BackgroundColor #E0F0FF
+    BorderColor DarkSlateGray
+}
+
+skinparam activity {
+	ActivityBackgroundColor #F0F0F0/#C0C0C0
+	ActivityBorderColor grey
+	ActivityDiamondBackgroundColor #F0F0F0/#C0C0C0
+	ActivityDiamondBorderColor grey
 	ArrowColor black
 }
 

@@ -37,7 +37,7 @@ class TypePart(
         val notes: List<PlantUmlNote>
 ) {
 
-    private val name: String
+    val name: String
         get() = typeElement.simpleName.toString()
 
     /**
@@ -53,7 +53,7 @@ class TypePart(
      *
      * @return the associations.
      */
-    private val associations: List<RelationPart>
+    val associations: List<RelationPart>
         get() = annotatedFields.flatMap { listOfNotNull(associationPart(it)) }
 
     /**
@@ -62,7 +62,7 @@ class TypePart(
      *
      * @return the list of variable elements.
      */
-    private val annotatedFields: List<VariableElement>
+    val annotatedFields: List<VariableElement>
         get() = typeElement.enclosedElements
                 .filter { element -> element.getAnnotation(PlantUmlField::class.java) != null }
                 .map { it as VariableElement }
@@ -85,13 +85,13 @@ class TypePart(
             else null
         }
 
-    private val isInterface: Boolean
+    val isInterface: Boolean
         get() = typeElement.kind.isInterface
 
-    private val isAbstract: Boolean
+    val isAbstract: Boolean
         get() = typeElement.modifiers.contains(Modifier.ABSTRACT)
 
-    private val isEnum: Boolean
+    val isEnum: Boolean
         get() = typeElement.kind == ElementKind.ENUM
 
     /**
@@ -102,13 +102,13 @@ class TypePart(
      * @return the association relation part.
      */
     private fun associationPart(field: VariableElement): RelationPart? {
-        val typeElement = toTypeElement(field.asType())
+        val fieldType = toTypeElement(field.asType())
 
-        return if (typeElement != null)
+        return if (fieldType != null)
             RelationPart(
                     RelationId(field.simpleName.toString()),
                     typeElement,
-                    typeElement,
+                    fieldType,
                     Relation.ASSOCIATION)
         else null
     }
@@ -120,6 +120,7 @@ class TypePart(
      */
     private fun realizationParts(): List<RelationPart> {
         return typeElement.interfaces
+                .filterIsInstance<DeclaredType>()
                 .map { toTypeElement(it) }
                 .mapNotNull { parentElement ->
                     if (parentElement != null)
@@ -130,21 +131,6 @@ class TypePart(
                                 Relation.REALIZATION)
                     else null
                 }
-    }
-
-    fun render() = """
-        ${renderTypeDeclaration()} ${name} {
-        ${annotatedFields
-            .map { "    ${it.simpleName}" }}
-        ${notes
-            .map { "    note ${it.position.name.toLowerCase()} of ${name}\n${it.body}\nend note" }}
-        }""".trimIndent();
-
-    private fun renderTypeDeclaration() = when {
-        this.isInterface -> "interface"
-        this.isAbstract -> "abstract class"
-        this.isEnum -> "enum"
-        else -> "class"
     }
 
     companion object {
@@ -158,11 +144,9 @@ class TypePart(
          * @return the element or an empty optional if the mirror represents a
          * primitive.
          */
-        fun toTypeElement(mirror: TypeMirror): TypeElement? {
-            return if (!mirror.kind.isPrimitive)
-                (mirror as DeclaredType).asElement() as TypeElement
-            else
-                null
+        fun toTypeElement(mirror: TypeMirror): TypeElement? = when (mirror) {
+            is DeclaredType -> mirror.asElement() as TypeElement
+            else -> null
         }
     }
 }

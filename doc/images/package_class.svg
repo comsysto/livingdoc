@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="391px" preserveAspectRatio="none" style="width:556px;height:391px;" version="1.1" viewBox="0 0 556 391" width="556px" zoomAndPan="magnify"><defs><linearGradient id="gp46dv0dfuu5a0" x1="0%" x2="100%" y1="0%" y2="100%"><stop offset="0%" stop-color="#F0F0F0"/><stop offset="100%" stop-color="#C0C0C0"/></linearGradient><filter height="300%" id="fp46dv0dfuu5a" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><!--class GroundVehicle--><rect fill="url(#gp46dv0dfuu5a0)" filter="url(#fp46dv0dfuu5a)" height="52.8047" id="GroundVehicle" style="stroke: #808080; stroke-width: 1.5;" width="114" x="60" y="100"/><ellipse cx="75" cy="116" fill="#A9DCDF" rx="11" ry="11" style="stroke: #808080; stroke-width: 1.0;"/><path d="M75.1094,111.0938 L73.9531,116.1719 L76.2813,116.1719 L75.1094,111.0938 Z M73.625,108.8594 L76.6094,108.8594 L79.9688,121.25 L77.5156,121.25 L76.75,118.1875 L73.4688,118.1875 L72.7188,121.25 L70.2813,121.25 L73.625,108.8594 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="82" x="89" y="120.1543">GroundVehicle</text><line style="stroke: #808080; stroke-width: 1.5;" x1="61" x2="173" y1="132" y2="132"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="101" x="66" y="146.2104">int numberOfWheels</text><!--class FlyingVehicle--><rect fill="url(#gp46dv0dfuu5a0)" filter="url(#fp46dv0dfuu5a)" height="32" id="FlyingVehicle" style="stroke: #808080; stroke-width: 1.5;" width="106" x="209" y="110.5"/><ellipse cx="224" cy="126.5" fill="#ADD1B2" rx="11" ry="11" style="stroke: #808080; stroke-width: 1.0;"/><path d="M226.4688,132.6406 Q225.8906,132.9375 225.25,133.0781 Q224.6094,133.2344 223.9063,133.2344 Q221.4063,133.2344 220.0781,131.5938 Q218.7656,129.9375 218.7656,126.8125 Q218.7656,123.6875 220.0781,122.0313 Q221.4063,120.375 223.9063,120.375 Q224.6094,120.375 225.25,120.5313 Q225.9063,120.6875 226.4688,120.9844 L226.4688,123.7031 Q225.8438,123.125 225.25,122.8594 Q224.6563,122.5781 224.0313,122.5781 Q222.6875,122.5781 222,123.6563 Q221.3125,124.7188 221.3125,126.8125 Q221.3125,128.9063 222,129.9844 Q222.6875,131.0469 224.0313,131.0469 Q224.6563,131.0469 225.25,130.7813 Q225.8438,130.5 226.4688,129.9219 L226.4688,132.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="74" x="238" y="130.6543">FlyingVehicle</text><!--class Wing--><rect fill="url(#gp46dv0dfuu5a0)" filter="url(#fp46dv0dfuu5a)" height="32" id="Wing" style="stroke: #808080; stroke-width: 1.5;" width="60" x="232" y="343"/><ellipse cx="247" cy="359" fill="#ADD1B2" rx="11" ry="11" style="stroke: #808080; stroke-width: 1.0;"/><path d="M249.4688,365.1406 Q248.8906,365.4375 248.25,365.5781 Q247.6094,365.7344 246.9063,365.7344 Q244.4063,365.7344 243.0781,364.0938 Q241.7656,362.4375 241.7656,359.3125 Q241.7656,356.1875 243.0781,354.5313 Q244.4063,352.875 246.9063,352.875 Q247.6094,352.875 248.25,353.0313 Q248.9063,353.1875 249.4688,353.4844 L249.4688,356.2031 Q248.8438,355.625 248.25,355.3594 Q247.6563,355.0781 247.0313,355.0781 Q245.6875,355.0781 245,356.1563 Q244.3125,357.2188 244.3125,359.3125 Q244.3125,361.4063 245,362.4844 Q245.6875,363.5469 247.0313,363.5469 Q247.6563,363.5469 248.25,363.2813 Q248.8438,363 249.4688,362.4219 L249.4688,365.1406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="28" x="261" y="363.1543">Wing</text><!--class Vehicle--><rect fill="url(#gp46dv0dfuu5a0)" filter="url(#fp46dv0dfuu5a)" height="32" id="Vehicle" style="stroke: #808080; stroke-width: 1.5;" width="73" x="101.5" y="8"/><ellipse cx="116.5" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #808080; stroke-width: 1.0;"/><path d="M118.9688,30.1406 Q118.3906,30.4375 117.75,30.5781 Q117.1094,30.7344 116.4063,30.7344 Q113.9063,30.7344 112.5781,29.0938 Q111.2656,27.4375 111.2656,24.3125 Q111.2656,21.1875 112.5781,19.5313 Q113.9063,17.875 116.4063,17.875 Q117.1094,17.875 117.75,18.0313 Q118.4063,18.1875 118.9688,18.4844 L118.9688,21.2031 Q118.3438,20.625 117.75,20.3594 Q117.1563,20.0781 116.5313,20.0781 Q115.1875,20.0781 114.5,21.1563 Q113.8125,22.2188 113.8125,24.3125 Q113.8125,26.4063 114.5,27.4844 Q115.1875,28.5469 116.5313,28.5469 Q117.1563,28.5469 117.75,28.2813 Q118.3438,28 118.9688,27.4219 L118.9688,30.1406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="41" x="130.5" y="28.1543">Vehicle</text><!--class Flying--><rect fill="url(#gp46dv0dfuu5a0)" filter="url(#fp46dv0dfuu5a)" height="32" id="Flying" style="stroke: #808080; stroke-width: 1.5;" width="65" x="229.5" y="8"/><ellipse cx="244.5" cy="24" fill="#B4A7E5" rx="11" ry="11" style="stroke: #808080; stroke-width: 1.0;"/><path d="M240.9219,19.7656 L240.9219,17.6094 L248.3125,17.6094 L248.3125,19.7656 L245.8438,19.7656 L245.8438,27.8438 L248.3125,27.8438 L248.3125,30 L240.9219,30 L240.9219,27.8438 L243.3906,27.8438 L243.3906,19.7656 L240.9219,19.7656 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="33" x="258.5" y="28.1543">Flying</text><!--class Train--><rect fill="url(#gp46dv0dfuu5a0)" filter="url(#fp46dv0dfuu5a)" height="52.8047" id="Train" style="stroke: #808080; stroke-width: 1.5;" width="82" x="6" y="219.5"/><ellipse cx="30.9" cy="235.5" fill="#ADD1B2" rx="11" ry="11" style="stroke: #808080; stroke-width: 1.0;"/><path d="M33.3688,241.6406 Q32.7906,241.9375 32.15,242.0781 Q31.5094,242.2344 30.8063,242.2344 Q28.3063,242.2344 26.9781,240.5938 Q25.6656,238.9375 25.6656,235.8125 Q25.6656,232.6875 26.9781,231.0313 Q28.3063,229.375 30.8063,229.375 Q31.5094,229.375 32.15,229.5313 Q32.8063,229.6875 33.3688,229.9844 L33.3688,232.7031 Q32.7438,232.125 32.15,231.8594 Q31.5563,231.5781 30.9313,231.5781 Q29.5875,231.5781 28.9,232.6563 Q28.2125,233.7188 28.2125,235.8125 Q28.2125,237.9063 28.9,238.9844 Q29.5875,240.0469 30.9313,240.0469 Q31.5563,240.0469 32.15,239.7813 Q32.7438,239.5 33.3688,238.9219 L33.3688,241.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="28" x="47.1" y="239.6543">Train</text><line style="stroke: #808080; stroke-width: 1.5;" x1="7" x2="87" y1="251.5" y2="251.5"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="70" x="12" y="265.7104">Car loadedCar</text><!--class Airplane--><rect fill="url(#gp46dv0dfuu5a0)" filter="url(#fp46dv0dfuu5a)" height="65.6094" id="Airplane" style="stroke: #808080; stroke-width: 1.5;" width="88" x="218" y="213"/><ellipse cx="237.5" cy="229" fill="#ADD1B2" rx="11" ry="11" style="stroke: #808080; stroke-width: 1.0;"/><path d="M239.9688,235.1406 Q239.3906,235.4375 238.75,235.5781 Q238.1094,235.7344 237.4063,235.7344 Q234.9063,235.7344 233.5781,234.0938 Q232.2656,232.4375 232.2656,229.3125 Q232.2656,226.1875 233.5781,224.5313 Q234.9063,222.875 237.4063,222.875 Q238.1094,222.875 238.75,223.0313 Q239.4063,223.1875 239.9688,223.4844 L239.9688,226.2031 Q239.3438,225.625 238.75,225.3594 Q238.1563,225.0781 237.5313,225.0781 Q236.1875,225.0781 235.5,226.1563 Q234.8125,227.2188 234.8125,229.3125 Q234.8125,231.4063 235.5,232.4844 Q236.1875,233.5469 237.5313,233.5469 Q238.1563,233.5469 238.75,233.2813 Q239.3438,233 239.9688,232.4219 L239.9688,235.1406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="46" x="252.5" y="233.1543">Airplane</text><line style="stroke: #808080; stroke-width: 1.5;" x1="219" x2="305" y1="245" y2="245"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="69" x="224" y="259.2104">Wing leftWing</text><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="76" x="224" y="272.0151">Wing rightWing</text><path d="M327.5,339 L327.5,379.2656 A0,0 0 0 0 327.5,379.2656 L544.5,379.2656 A0,0 0 0 0 544.5,379.2656 L544.5,349 L534.5,339 L409.1593,339 L306.3578,274.8071 L401.1593,339 L327.5,339 A0,0 0 0 0 327.5,339 " fill="#FFFFAA" filter="url(#fp46dv0dfuu5a)" style="stroke: #808080; stroke-width: 1.0;"/><path d="M534.5,339 L534.5,349 L544.5,349 L534.5,339 " fill="#FFFFAA" style="stroke: #808080; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="159" x="333.5" y="356.0669">This models an airplane, a</text><text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="33" x="496.5" y="356.0669">flying</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="86" x="333.5" y="371.1997">vehicle that is</text><text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="30" x="423.5" y="371.1997">very</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="26" x="457.5" y="371.1997">fast.</text><!--class Car--><rect fill="url(#gp46dv0dfuu5a0)" filter="url(#fp46dv0dfuu5a)" height="32" id="Car" style="stroke: #808080; stroke-width: 1.5;" width="51" x="68.5" y="343"/><ellipse cx="83.5" cy="359" fill="#ADD1B2" rx="11" ry="11" style="stroke: #808080; stroke-width: 1.0;"/><path d="M85.9688,365.1406 Q85.3906,365.4375 84.75,365.5781 Q84.1094,365.7344 83.4063,365.7344 Q80.9063,365.7344 79.5781,364.0938 Q78.2656,362.4375 78.2656,359.3125 Q78.2656,356.1875 79.5781,354.5313 Q80.9063,352.875 83.4063,352.875 Q84.1094,352.875 84.75,353.0313 Q85.4063,353.1875 85.9688,353.4844 L85.9688,356.2031 Q85.3438,355.625 84.75,355.3594 Q84.1563,355.0781 83.5313,355.0781 Q82.1875,355.0781 81.5,356.1563 Q80.8125,357.2188 80.8125,359.3125 Q80.8125,361.4063 81.5,362.4844 Q82.1875,363.5469 83.5313,363.5469 Q84.1563,363.5469 84.75,363.2813 Q85.3438,363 85.9688,362.4219 L85.9688,365.1406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="19" x="97.5" y="363.1543">Car</text><!--link Vehicle to GroundVehicle--><path d="M130.6229,60.007 C127.9376,73.1139 124.9525,87.6841 122.4627,99.8369 " fill="none" id="Vehicle-GroundVehicle" style="stroke: #000000; stroke-width: 1.0;"/><polygon fill="none" points="123.8469,58.2037,134.7188,40.0156,137.562,61.0136,123.8469,58.2037" style="stroke: #000000; stroke-width: 1.0;"/><!--link Vehicle to FlyingVehicle--><path d="M172.8051,52.7703 C195.2837,71.3514 223.7102,94.8491 242.3518,110.2586 " fill="none" id="Vehicle-FlyingVehicle" style="stroke: #000000; stroke-width: 1.0;"/><polygon fill="none" points="168.3304,58.1535,157.375,40.0156,177.2501,47.3628,168.3304,58.1535" style="stroke: #000000; stroke-width: 1.0;"/><!--link Flying to FlyingVehicle--><path d="M262,60.0509 C262,77.1817 262,96.8035 262,110.2586 " fill="none" id="Flying-FlyingVehicle" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="none" points="255.0001,60.0157,262,40.0156,269.0001,60.0156,255.0001,60.0157" style="stroke: #000000; stroke-width: 1.0;"/><!--link GroundVehicle to Train--><path d="M91.2575,170.4461 C81.6944,186.7717 71.1378,204.7933 62.7339,219.14 " fill="none" id="GroundVehicle-Train" style="stroke: #000000; stroke-width: 1.0;"/><polygon fill="none" points="85.3158,166.74,101.4647,153.0209,97.3959,173.8163,85.3158,166.74" style="stroke: #000000; stroke-width: 1.0;"/><!--link FlyingVehicle to Airplane--><path d="M262,162.6839 C262,178.5337 262,197.0181 262,212.5437 " fill="none" id="FlyingVehicle-Airplane" style="stroke: #000000; stroke-width: 1.0;"/><polygon fill="none" points="255.0001,162.6163,262,142.6163,269.0001,162.6163,255.0001,162.6163" style="stroke: #000000; stroke-width: 1.0;"/><!--link GroundVehicle to Car--><path d="M114.0242,173.2992 C111.9291,203.5059 108.8207,243.6238 105,279 C102.6064,301.1622 98.9428,326.6554 96.5101,342.7926 " fill="none" id="GroundVehicle-Car" style="stroke: #000000; stroke-width: 1.0;"/><polygon fill="none" points="107.045,172.7527,115.3664,153.2654,121.0137,173.6886,107.045,172.7527" style="stroke: #000000; stroke-width: 1.0;"/><!--link Train to Car--><path d="M58.1383,272.7794 C66.4258,292.7046 77.5807,319.5237 85.2367,337.9308 " fill="none" id="Train-Car" style="stroke: #000000; stroke-width: 1.0;"/><polygon fill="#000000" points="87.298,342.8868,87.5347,333.0408,85.3777,338.2702,80.1483,336.1132,87.298,342.8868" style="stroke: #000000; stroke-width: 1.0;"/><!--link Airplane to Wing--><path d="M250.2585,279.2925 C248.5279,298.1263 249.0246,321.1243 251.7488,337.5677 " fill="none" id="Airplane-Wing" style="stroke: #000000; stroke-width: 1.0;"/><polygon fill="#000000" points="252.758,342.8774,255.0067,333.2887,251.8241,337.9654,247.1474,334.7829,252.758,342.8774" style="stroke: #000000; stroke-width: 1.0;"/><!--link Airplane to Wing--><path d="M274.4321,279.2925 C276.2646,298.1263 275.7387,321.1243 272.8542,337.5677 " fill="none" id="Airplane-Wing-1" style="stroke: #000000; stroke-width: 1.0;"/><polygon fill="#000000" points="271.7856,342.8774,277.4828,334.8436,272.7722,337.9757,269.6401,333.2651,271.7856,342.8774" style="stroke: #000000; stroke-width: 1.0;"/><!--
+@startuml
+
+skinParam componentStyle uml2
+
+skinparam class {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+    BorderColor<<new_in_context>> green
+	BorderColor<<modified>> blue
+	BackgroundColor<<modified>> #e6e6ff/#b3b3ff
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	BackgroundColor<<virtual>> #ffffff
+    BorderColor<<virtual>> #ffffff
+	BackgroundColor<<mapping>> #FFFFAA
+    BorderColor<<mapping>> #FFFFAA
+	ArrowColor black
+}
+
+hide empty members
+hide <<virtual>> circle
+hide <<mapping>> circle
+
+skinparam object {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam entity {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam control {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam database {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam component {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+	BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam rectangle {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam interface {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam boundary {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam node {
+	BackgroundColor #F0F0F0/#C0C0C0
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam cloud {
+	BackgroundColor #CFE9F1
+	BorderColor grey
+    BackgroundColor<<new>> #e6ffe6/#b3ffb3
+    BorderColor<<new>> green
+	BackgroundColor<<required>> #ffd700/yellow
+    BorderColor<<required>> orange
+	ArrowColor black
+}
+
+skinparam sequence {
+    BoxBackgroundColor #FAFAFA
+    BoxBorderColor grey
+	ArrowColor black
+	ActorBorderColor grey
+	LifeLineBorderColor black
+	LifeLineBackgroundColor #E0E0E0|#FFFFFF
+
+	ParticipantBorderColor grey
+	ParticipantBackgroundColor #F0F0F0/#C0C0C0
+	ParticipantBorderColor<<new>> green
+	ParticipantBackgroundColor<<new>> #e6ffe6/#b3ffb3
+	ParticipantBorderColor<<new_in_context>> green
+	ParticipantBorderColor<<modified>> blue
+	ParticipantBackgroundColor<<modified>> #e6e6ff/#b3b3ff
+	ParticipantBackgroundColor<<required>> #ffd700/yellow
+    ParticipantBorderColor<<required>> orange
+	ParticipantFontColor black
+
+	ActorBackgroundColor #F0F0F0/#C0C0C0
+    ActorBackgroundColor<<new>> #e6ffe6/#b3ffb3
+}
+
+skinparam usecase {
+    BackgroundColor #E0F0FF
+    BorderColor DarkSlateGray
+}
+
+skinparam activity {
+	ActivityBackgroundColor #F0F0F0/#C0C0C0
+	ActivityBorderColor grey
+	ActivityDiamondBackgroundColor #F0F0F0/#C0C0C0
+	ActivityDiamondBorderColor grey
+	ArrowColor black
+}
+
+skinParam noteBackgroundColor #FFFFAA
+skinParam noteBorderColor gray
+hide empty members
+abstract class GroundVehicle {
+int numberOfWheels
+}
+
+class FlyingVehicle
+class Wing
+class Vehicle
+interface Flying
+class Train {
+Car loadedCar
+}
+
+class Airplane {
+Wing leftWing
+Wing rightWing
+}
+
+note bottom of Airplane
+This models an airplane, a //flying//
+vehicle that is **very** fast.
+end note
+
+class Car
+
+Vehicle <|- - GroundVehicle
+Vehicle <|- - FlyingVehicle
+Flying <|.. FlyingVehicle
+GroundVehicle <|- - Train
+FlyingVehicle <|- - Airplane
+GroundVehicle <|- - Car
+
+Train - -> Car
+Airplane - -> Wing
+Airplane - -> Wing
+
+@enduml
+
+PlantUML version 1.2019.06(Fri May 24 19:10:25 CEST 2019)
+(APACHE source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 11.0.3+12-b304.39
+Operating System: Linux
+OS Version: 4.15.0-58-generic
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>
