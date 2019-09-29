@@ -13,6 +13,8 @@ dependencies {
     api project(':annotations')
     api libs.'commons-lang3'
     api libs.'auto-service'
+    api libs.'javaparser'
+    api libs.'javasymbolsolver'
     api libs.'slf4j-api'
     api libs.'slf4j'
     testImplementation libs.'junit'
@@ -46,7 +48,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             groupId = group
-            artifactId = 'livingdoc-annotation-processors'
+            artifactId = 'livingdoc-annotation-processors-kotlin'
             version = version
 
             from components.java

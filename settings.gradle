@@ -1,6 +1,6 @@
 rootProject.name = 'living-documentation-lab'
 
-//include 'annotation-processors'
+include 'annotation-processors'
 include 'annotation-processors-kotlin'
 include 'annotations'
 

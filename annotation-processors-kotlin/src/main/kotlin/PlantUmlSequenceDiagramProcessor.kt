@@ -1,28 +1,28 @@
 package com.comsysto.livingdoc.kotlin.annotation.processors
 
-import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNotes
-import com.comsysto.livingdoc.kotlin.annotation.processors.PlantUmlDiagramProcessor.KEY_OUT_DIR
-import com.comsysto.livingdoc.kotlin.annotation.processors.PlantUmlDiagramProcessor.KEY_SETTINGS_DIR
-import com.comsysto.livingdoc.kotlin.annotation.processors.model.ClassDiagram
 import com.comsysto.livingdoc.kotlin.annotation.processors.model.DiagramId
-import com.comsysto.livingdoc.kotlin.annotation.processors.model.TypePart
-import com.comsysto.livingdoc.kotlin.annotation.processors.render.plantuml.PlantUmlClassDiagramRenderer.renderDiagram
+import com.comsysto.livingdoc.kotlin.annotation.processors.model.SequenceDiagram
+import com.comsysto.livingdoc.kotlin.annotation.processors.render.plantuml.PlantUmlDiagramRenderer
 import com.google.auto.service.AutoService
+import model.ExecutablePart
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.util.*
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
+import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 
-@SupportedAnnotationTypes("com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass")
+
+@SupportedAnnotationTypes("com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable.StartOfSequence")
 @SupportedOptions(KEY_SETTINGS_DIR, KEY_OUT_DIR)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor::class)
-object PlantUmlDiagramProcessor : AbstractProcessor() {
-    private val log = LoggerFactory.getLogger(PlantUmlDiagramProcessor.javaClass.name);
+object PlantUmlSequenceDiagramProcessor : AbstractProcessor() {
+    private val log = LoggerFactory.getLogger(PlantUmlSequenceDiagramProcessor::class.java.name);
 
     const val KEY_SETTINGS_DIR = "pumlgen.settings.dir"
     const val DEF_SETTINGS_DIR = ".."
@@ -49,14 +49,10 @@ object PlantUmlDiagramProcessor : AbstractProcessor() {
      * @param roundEnv   the round environment
      */
     private fun processAnnotation(annotation: TypeElement, roundEnv: RoundEnvironment) {
-        val annotated = roundEnv.getElementsAnnotatedWith(annotation)
-                .map { it as TypeElement }
-                .toSet()
-
         when (annotation.qualifiedName.toString()) {
-            PlantUmlClass::class.qualifiedName -> processPlantumlClassAnnotation(annotated)
-
-            // Here we could add support for additional top-level annotations
+            PlantUmlExecutable.StartOfSequence::class.qualifiedName -> processStartOfSequence(roundEnv.getElementsAnnotatedWith(annotation)
+                    .map { it as ExecutableElement }
+                    .toSet())
 
             else -> log.error(
                     "Unexpected annotation type: {}. Most likely there is a mismatch between the value of "
@@ -66,34 +62,56 @@ object PlantUmlDiagramProcessor : AbstractProcessor() {
         }
     }
 
-    /**
-     * Process the [PlantUmlClass] annotation for all types that have this
-     * annotation. The processor will generate one diagram file per unique
-     * diagram ID found on any annotation.
-     *
-     * @param annotatedTypes the annotated types.
-     */
-    private fun processPlantumlClassAnnotation(annotatedTypes: Set<TypeElement>) {
-        val generatedFiles = annotatedTypes
+    private fun processStartOfSequence(annotated: Set<ExecutableElement>) {
+        val generatedFiles = annotated
                 .map { this.createDiagramPart(it) }
                 .flatMap { part ->
                     part.diagramIds
-                            .map { id -> TypePart(setOf(id), part.annotation, part.typeElement, part.notes) }
+                            .map { id ->
+                                ExecutablePart(
+                                        processingEnv,
+                                        setOf(id),
+                                        part.annotation,
+                                        part.annotated)
+                            }
                 }
-                .groupBy { it.diagramIds.first() }
+                .groupBy { it.diagramIds.take(1)[0] }
 
-        generatedFiles.entries.forEach { entry -> createDiagram(entry.key, entry.value) }
+        generatedFiles.keys.forEach { id ->
+            generatedFiles[id]?.let { files -> createSequenceDiagram(id, files) }
+        }
     }
 
-    private fun createDiagramPart(annotated: TypeElement): TypePart {
-        val classAnnotation = annotated.getAnnotation(PlantUmlClass::class.java)
-        log.debug("Processing PlantUmlClass annotation on type: {}", annotated)
+    private fun createSequenceDiagram(diagramId: DiagramId, parts: List<ExecutablePart>) {
+        val outFile = getOutFile(diagramId)
+        val settings = loadSettings(diagramId)
 
-        return TypePart(
-                classAnnotation.diagramIds.map { DiagramId(it) }.toSet(),
-                classAnnotation,
-                annotated,
-                getNoteAnnotations(annotated))
+        log.debug("Create PlantUML diagram: {}", outFile)
+
+        BufferedWriter(FileWriter(outFile)).use { out ->
+            BufferedWriter(FileWriter(outFile)).use { out ->
+                val sequenceDiagram = SequenceDiagram(
+                        settings.getProperty("title", null),
+                        settings.getProperty("include.files", "")
+                                .split(",")
+                                .dropLastWhile { it.isEmpty() },
+                        parts)
+                out.write(PlantUmlDiagramRenderer.renderDiagram(sequenceDiagram))
+            }
+        }
+    }
+
+    private fun createDiagramPart(annotated: ExecutableElement): ExecutablePart {
+        val annotation = annotated.getAnnotation(PlantUmlExecutable::class.java)
+        log.debug("Processing PlantUmlExecutable annotation on executable: {}", annotated)
+
+        return ExecutablePart(
+                processingEnv,
+                annotation.diagramIds
+                        .map { DiagramId(it) }
+                        .toSet(),
+                annotation,
+                annotated)
     }
 
     private fun getNoteAnnotations(annotated: TypeElement): List<PlantUmlNote> {
@@ -101,38 +119,15 @@ object PlantUmlDiagramProcessor : AbstractProcessor() {
                 ?: listOfNotNull(annotated.getAnnotation(PlantUmlNote::class.java))
     }
 
-    private fun createDiagram(diagramId: DiagramId, parts: List<TypePart>) {
-        val outFile = getOutFile(diagramId)
-        val settings = loadSettings(diagramId)
-
-        log.debug("Create PlantUML diagram: {}", outFile)
-
-        try {
-            BufferedWriter(FileWriter(outFile)).use { out ->
-                val classDiagram = ClassDiagram(
-                        settings.getProperty("title", null),
-                        settings.getProperty("include.files", "")
-                                .split(",")
-                                .dropLastWhile { it.isEmpty() },
-                        parts
-                )
-                out.write(renderDiagram(classDiagram))
-            }
-        } catch (e: IOException) {
-            log.error("Failed to generate diagram: $outFile", e)
-            throw RuntimeException(e)
-        }
-    }
-
     private fun getOutFile(diagramId: DiagramId): File {
-        val diagramFile = File(outDir(), diagramId.value + "_class.puml")
+        val diagramFile = File(outDir(), diagramId.value + "_sequence.puml")
 
         diagramFile.parentFile.mkdirs()
         return diagramFile
     }
 
     private fun loadSettings(id: DiagramId): Properties {
-        val settingsFile = File(settingsDir(), id.value + "_class.properties")
+        val settingsFile = File(settingsDir(), id.value + "_sequence.properties")
         val settings = Properties()
 
         try {

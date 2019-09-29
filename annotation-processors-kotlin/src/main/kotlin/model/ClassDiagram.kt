@@ -14,18 +14,20 @@ class ClassDiagram(
         /**
          * the diagram title.
          */
-        val title: String? = null,
+        title: String? = null,
 
         /**
          * Any PlantUml files to be included.
          */
-        val includeFiles: List<String> = listOf(),
+        includeFiles: List<String> = listOf(),
 
         /**
          * The type parts to be rendered in this diagram.
          */
         val parts: List<TypePart> = listOf()
-) {
+
+) : Diagram(title, includeFiles) {
+
     /**
      * Get all inheritance or realization relations within this diagram.
      *

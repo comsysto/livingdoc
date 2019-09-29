@@ -1,8 +1,8 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml
 
-import com.comsysto.livingdoc.kotlin.annotation.processors.PlantUmlDiagramProcessor
-import com.comsysto.livingdoc.kotlin.annotation.processors.PlantUmlDiagramProcessor.DEF_OUT_DIR
-import com.comsysto.livingdoc.kotlin.annotation.processors.PlantUmlDiagramProcessor.KEY_OUT_DIR
+import com.comsysto.livingdoc.kotlin.annotation.processors.DEF_OUT_DIR
+import com.comsysto.livingdoc.kotlin.annotation.processors.KEY_OUT_DIR
+import com.comsysto.livingdoc.kotlin.annotation.processors.PlantUmlClassDiagramProcessor
 import com.google.testing.compile.Compilation.Status.SUCCESS
 import com.google.testing.compile.Compiler
 import com.google.testing.compile.JavaFileObjects
@@ -20,7 +20,7 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 import javax.tools.JavaFileObject
 
-class PlantUmlDiagramProcessorTest {
+class PlantUmlClassDiagramProcessorTest {
     private lateinit var exampleDir: File
 
     @Before
@@ -34,7 +34,7 @@ class PlantUmlDiagramProcessorTest {
     @Test
     fun `Should run successfully and produce expected output`() {
         val result = Compiler.javac()
-                .withProcessors(PlantUmlDiagramProcessor)
+                .withProcessors(PlantUmlClassDiagramProcessor())
                 .withOptions("-Apumlgen.out.dir=out")
                 .compile(exampleDir.listFiles()?.map { this.javaFileObject(it) })
 
