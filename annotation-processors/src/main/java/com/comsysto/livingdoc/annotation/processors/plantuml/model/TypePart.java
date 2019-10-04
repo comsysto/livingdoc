@@ -36,6 +36,7 @@ import javax.lang.model.type.WildcardType;
  */
 @Value
 @PlantUmlClass(diagramIds = PlantUmlClassDiagramProcessor.DIAGRAM_ID)
+@PlantUmlNote(body = "Models a type in the diagram")
 public class TypePart {
 
     /**

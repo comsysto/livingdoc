@@ -1,3 +1,4 @@
+:imagesdir: ./doc/images
 :imagesoutdir: ./doc/images
 
 ifdef::env-github[]
@@ -21,7 +22,7 @@ endif::[]
 Documentation is hard. Every programmer knows this. It's also boring and repetitive, and the result often looks ugly
 and is hard to read (because not all programmers are poets). The fact that written documentation is usually outdated
 before it has been finished doesn't make it any better.
-
+                                                        
 Therefore, writing documentation it is usually something programmers try to avoid.
 
 There is a simple truth you will often hear when talking to programmers about documentation: the most accurate
@@ -47,6 +48,14 @@ up-to-date.
 
 ====== IDEs
 // IntelliJ, Netbeans, Eclipse
+For example, here is a diagram as IntelliJ IDEA would render it:
+
+image::idea-package-example.png[Package diagram rendered by IntelliJ IDEA]
+
+While this is a clean and nicely drawn UML diagram, the developer has not much influence on how it looks. For example,
+it cannot show field associations, and neither is there a possibility to include notes or comments to explain things.
+It is also not possible to exclude types from the diagram or make references to types outside the package.
+
 ====== Dedicated generators
 // e.g. https://github.com/gboersma/uml-java-doclet
 
@@ -66,50 +75,104 @@ Diagram Controls give the developer a lot of control over what is generated
 Currentness::
 Diagrams are re-generated with every build
 
-==== PlantUML annotation library
+==== Annotation library
 At the moment, the annotation library contains only a few annotations that can be used for class diagrams:
 
 link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlClass.java[@PlantUmlClass]::
 This is the main annotation to be used for class diagrams. When added to a Java type (interface, class or enum), a
-representation of this type is included in one or more diagrams
+representation of this type is included in one or more diagrams.
 link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlField.java[@PlantUmlField]::
 This annotation may be added to a field within a type already annotated with **@PlantUmlClass**. It will render the
 field as part of the class body and/or add an association to the field's type, provided that type is also part of the
-diagram
+diagram.
+link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlExecutable.java[@PlantUmlExecutable]::
+Annotation for methods that should show up within a type already annotated with **@PlantUmlClass**. It will render the
+method as part of the class body, provided that type is also part of the diagram.
 link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlNote.java[@PlantUmlNote]::
-This annotation may be used to associate one or more UML notes with a type, providing further textual description
+This annotation may be used to associate one or more UML notes with a type, providing further textual description.
+link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlNote.java[@PlantUmlRelation]::
+Can be used to draw additional dependency relations between types that are not directly connected via an
+association.
 
-==== PlantUML annotation processor
+==== Annotation processor
 The annotation processor is a normal Java annotation processor that can be included easily as a Java compiler argument -
 either using the programmer's favorite Java IDE's project configuration, or as part of the build process.
 The annotation processor produces a model of the elements to be rendered in the resulting diagrams and then outputs the
-PlantUML source code.
+PlantUML source code. The annotation processor can be configured using the following options (specified using the ``-A``
+parameter of the Java compiler):
 
-===== PlantUML diagram model
+.PlantUML Class Diagram Processor options
+|===
+|Option |Default value
 
-ifdef::env-github[]
-image::annotation-processors/doc/annotation-processor_class.png[Annotation processor classes]
-endif::[]
-ifndef::env-github[]
-plantuml::annotation-processors/doc/annotation-processor_class.puml[imagesoutdir="./annotation-processors/doc"]
-endif::[]
+|**pumlgen.settings.dir** +
+The directory where the annotation processor will search for a file ``${diagramId}_class.properties`` for additional
+diagram settings
+|``.`` (the current directory)
 
-NOTE: It may occur to the reader that the diagram above is a handwritten PlantUML class diagram - it hasn't been
-auto-generated using the annotation processor. So, why are we not 'eating our own dog food' here?
-The reason is simple: while it is possible to use an annotation processor on itself, it's definitely not a good idea
-because a functional error in the processor or its templates might stop the code from compiling and create a cyclic
-issue that is difficult to debug.
+|**pumlgen.out.dir** +
+The directory where the annotation processor will write diagram files
+|``./out``
 
-=== Example
-As an example, the test sources contain an artificial class hierarchy that models different types of vehicles. The
+|**pumlgen.enabled** +                                             
+This setting may be used to completely disable the processor at compilation time despite its presence on the classpath
+|``true``
+|===
+
+
+=== Examples
+As a simple example, the test sources contain an artificial class hierarchy that models different types of vehicles. The
 following diagram is auto-generated using the annotation processor - you can verify this by changing something in the
-code and re-run the build:
+code and re-run the build.
+
+==== Example 1: The whole test classes hierarchy
+
+The first example displays the hierarchy of all annotated classes in the package:
 
 ifdef::env-github[]
-image::annotation-processors/doc/package_class.png[Annotation processor classes]
+image::package_class.png[Annotation processor classes]
 endif::[]
 ifndef::env-github[]
 plantuml::annotation-processors/out/package_class.puml[imagesoutdir="./annotation-processors/doc"]
+endif::[]
+
+We find it notable how clean and expressive this diagram is compared to diagrams rendered using conventional means:
+
+* It shows all the associations between the classes that the annotation processor managed to discern from the Java type
+model: inheritance (both realization and implementation) as well as field references
+* It has a note. In our view, notes are often the single thing that converts a say-nothing diagram into something that
+helps the reader understand the software fully
++
+NOTE: We did not consider it useful to render the contents of JavaDoc comments in notes. First, comments use HTML markup
+and PlatUML uses the Creole markup language. Second, a JavaDoc comment that fully describes a complex type can be very
+large. It makes much more sense to write a brief (and possible redundant) description into the annotation itself.
+
+==== Example 2: Selected classes only
+It is also possible to render multiple different diagrams from the same sources. This is controlled through the
+``diagramIds`` attribute of the ``@PlantUmlClass`` annotation:
+
+ifdef::env-github[]
+image::package_class.png[Annotation processor classes]
+endif::[]
+ifndef::env-github[]
+plantuml::annotation-processors/out/ground-vehicles_class.puml[imagesoutdir="./annotation-processors/doc"]
+endif::[]
+
+== Annotation processor internals
+
+In this section, we will look at the internal structure of the annotation processor.
+
+=== Data Model
+
+Our little project would look quite bad if we weren't 'eating our own dog food'. So the centerpiece of our documentation
+for the PlantUML Class Diagram generator is a class diagram, fully auto-generated from annotations:
+
+ifdef::env-github[]
+image::doc/images/annotation-processor_class.png[Annotation processor classes]
+endif::[]                     
+ifndef::env-github[]
+[.right]
+plantuml::annotation-processors/out/annotation-processor_class.puml[]
 endif::[]
 
 == What's next?
