@@ -152,7 +152,7 @@ It is also possible to render multiple different diagrams from the same sources.
 ``diagramIds`` attribute of the ``@PlantUmlClass`` annotation:
 
 ifdef::env-github[]
-image::package_class.png[Annotation processor classes]
+image::ground-vehicles_class.png[Annotation processor classes]
 endif::[]
 ifndef::env-github[]
 plantuml::annotation-processors/out/ground-vehicles_class.puml[imagesoutdir="./annotation-processors/doc"]
@@ -168,7 +168,7 @@ Our little project would look quite bad if we weren't 'eating our own dog food'.
 for the PlantUML Class Diagram generator is a class diagram, fully auto-generated from annotations:
 
 ifdef::env-github[]
-image::doc/images/annotation-processor_class.png[Annotation processor classes]
+image::annotation-processor_class.png[Annotation processor classes]
 endif::[]                     
 ifndef::env-github[]
 [.right]
