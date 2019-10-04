@@ -78,19 +78,19 @@ Diagrams are re-generated with every build
 ==== Annotation library
 At the moment, the annotation library contains only a few annotations that can be used for class diagrams:
 
-link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlClass.java[@PlantUmlClass]::
+link:annotations/src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlClass.java[@PlantUmlClass]::
 This is the main annotation to be used for class diagrams. When added to a Java type (interface, class or enum), a
 representation of this type is included in one or more diagrams.
-link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlField.java[@PlantUmlField]::
+link:annotations/src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlField.java[@PlantUmlField]::
 This annotation may be added to a field within a type already annotated with **@PlantUmlClass**. It will render the
 field as part of the class body and/or add an association to the field's type, provided that type is also part of the
 diagram.
-link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlExecutable.java[@PlantUmlExecutable]::
+link:annotations/src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlExecutable.java[@PlantUmlExecutable]::
 Annotation for methods that should show up within a type already annotated with **@PlantUmlClass**. It will render the
 method as part of the class body, provided that type is also part of the diagram.
-link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlNote.java[@PlantUmlNote]::
+link:annotations/src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlNote.java[@PlantUmlNote]::
 This annotation may be used to associate one or more UML notes with a type, providing further textual description.
-link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlNote.java[@PlantUmlRelation]::
+link:annotations/src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlNote.java[@PlantUmlRelation]::
 Can be used to draw additional dependency relations between types that are not directly connected via an
 association.
 
