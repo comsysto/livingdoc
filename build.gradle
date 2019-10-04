@@ -4,8 +4,8 @@ plugins {
 }
 
 allprojects {
-    apply plugin: 'maven-publish'
     apply plugin: 'java'
+    apply plugin: 'maven-publish'
 
     sourceCompatibility = 1.8
     group = 'com.comsysto.livingdoc'

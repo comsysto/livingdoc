@@ -1,5 +1,6 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml;
 
+import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor.KEY_ENABLED;
 import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor.KEY_OUT_DIR;
 import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor.KEY_SETTINGS_DIR;
 import static java.util.Arrays.stream;
@@ -51,15 +52,19 @@ import javax.lang.model.element.TypeElement;
  */
 @SuppressWarnings("unused")
 @SupportedAnnotationTypes("com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass")
-@SupportedOptions({KEY_SETTINGS_DIR, KEY_OUT_DIR})
+@SupportedOptions({KEY_SETTINGS_DIR, KEY_OUT_DIR, KEY_ENABLED})
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
 @Slf4j
+@PlantUmlClass(diagramIds = PlantUmlClassDiagramProcessor.DIAGRAM_ID)
 public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
     protected static final String KEY_SETTINGS_DIR = "pumlgen.settings.dir";
     protected static final String DEF_SETTINGS_DIR = ".";
     protected static final String KEY_OUT_DIR = "pumlgen.out.dir";
     protected static final String DEF_OUT_DIR = "./out";
+    protected static final String KEY_ENABLED = "pumlgen.enabled";
+    protected static final String DEF_ENABLED = "true";
+    public static final String DIAGRAM_ID = "annotation-processor";
     private final Configuration freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_23);
 
     private String settingsDir;
@@ -112,6 +117,7 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
                         annotation.getQualifiedName().toString());
             }
         }
+        else log.info("PlantUML class diagram processing is disabled.");
     }
 
     /**
@@ -121,7 +127,7 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
      * @return true if the processor is enabled.
      */
     private boolean isEnabled() {
-        return toBoolean(processingEnv.getOptions().getOrDefault("livingdoc.annotation.enabled", "true"));
+        return toBoolean(processingEnv.getOptions().getOrDefault(KEY_ENABLED, DEF_ENABLED));
     }
 
     /**

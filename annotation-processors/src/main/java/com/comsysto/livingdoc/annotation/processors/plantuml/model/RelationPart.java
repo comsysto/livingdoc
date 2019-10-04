@@ -1,5 +1,7 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml.model;
 
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
+import com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor;
 import lombok.Value;
 
 import javax.lang.model.element.TypeElement;
@@ -8,6 +10,7 @@ import javax.lang.model.element.TypeElement;
  * A diagram part that represents a relation between two type elements.
  */
 @Value
+@PlantUmlClass(diagramIds = PlantUmlClassDiagramProcessor.DIAGRAM_ID)
 public class RelationPart {
 
     RelationId id;

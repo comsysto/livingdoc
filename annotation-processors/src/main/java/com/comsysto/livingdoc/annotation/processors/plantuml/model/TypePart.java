@@ -8,6 +8,7 @@ import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlField;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
 import com.comsysto.livingdoc.annotation.processors.plantuml.Optionals;
+import com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.RelationPart.Relation;
 import lombok.Value;
 
@@ -25,6 +26,7 @@ import javax.lang.model.type.TypeMirror;
  * Models a type within a class diagram.
  */
 @Value
+@PlantUmlClass(diagramIds = PlantUmlClassDiagramProcessor.DIAGRAM_ID)
 public class TypePart {
 
     /**

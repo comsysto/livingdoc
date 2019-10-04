@@ -1,4 +1,4 @@
-:imagesoutdir: .
+:imagesoutdir: ./doc/images
 
 ifdef::env-github[]
 :tip-caption: :bulb:
@@ -12,7 +12,7 @@ ifndef::env-github[]
 :icons: font
 endif::[]
 
-:toc: 
+:toc:
 :toc-placement!:
 
 == Living Documentation Lab

@@ -7,6 +7,8 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
+import com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor;
 import freemarker.template.DefaultObjectWrapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,6 +29,7 @@ import javax.lang.model.type.TypeMirror;
 @SuppressWarnings("unused")
 @EqualsAndHashCode(callSuper = true)
 @Data
+@PlantUmlClass(diagramIds = PlantUmlClassDiagramProcessor.DIAGRAM_ID)
 public class ClassDiagram extends DefaultObjectWrapper {
 
     /**
