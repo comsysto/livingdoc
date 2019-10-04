@@ -53,9 +53,7 @@ open class BasePlantUmlClassDiagramProcessor : AbstractProcessor() {
     }
     
     private fun renderDiagrams(parts: List<TypePart>, roundEnv: RoundEnvironment) {
-        val generatedFiles = parts
-                .flatMap { diagramIds(it) }
-                .groupBy { it.diagramIds.first() }
+        val generatedFiles = parts.map { it.typeElement }
 
         generatedFiles.entries.forEach { entry -> createDiagram(entry.key, entry.value) }
     }
@@ -64,15 +62,8 @@ open class BasePlantUmlClassDiagramProcessor : AbstractProcessor() {
         val classAnnotation = annotated.getAnnotation(PlantUmlClass::class.java)
         log.debug("Processing PlantUmlClass annotation on type: {}", annotated)
 
-        return TypePart(
-                classAnnotation.diagramIds.map { DiagramId(it) }.toSet(),
-                classAnnotation,
-                annotated,
-                getNoteAnnotations(annotated))
+        return TypePart(classAnnotation, annotated, getNoteAnnotations(annotated))
     }
-
-    private fun diagramIds(part: TypePart) = part.diagramIds
-            .map { id -> TypePart(setOf(id), part.annotation, part.typeElement, part.notes) }
 
     private fun getNoteAnnotations(annotated: TypeElement): List<PlantUmlNote> {
         return annotated.getAnnotation(PlantUmlNotes::class.java)?.value?.toList()

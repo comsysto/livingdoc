@@ -16,12 +16,6 @@ import javax.lang.model.type.TypeMirror
 class TypePart(
 
         /**
-         * The IDs of the diagrams that should render this type part (please note
-         * this may not be equal to the diagram IDs in the annotation).
-         */
-        val diagramIds: Set<DiagramId>,
-
-        /**
          * The [PlantUmlClass] annotation attached to the type.
          */
         val annotation: PlantUmlClass,
