@@ -7,13 +7,14 @@ import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNotes;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagram;
-import com.comsysto.livingdoc.annotation.processors.plantuml.model.TypePart;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.DiagramId;
+import com.comsysto.livingdoc.annotation.processors.plantuml.model.TypePart;
 import com.google.auto.service.AutoService;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
@@ -89,26 +90,38 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
      * @param roundEnv   the round environment
      */
     private void processAnnotation(final TypeElement annotation, final RoundEnvironment roundEnv) {
-        final Set<TypeElement> annotated = roundEnv.getElementsAnnotatedWith(annotation)
-            .stream()
-            .map(TypeElement.class::cast)
-            .collect(toSet());
+        if (isEnabled()) {
+            final Set<TypeElement> annotated = roundEnv.getElementsAnnotatedWith(annotation)
+                .stream()
+                .map(TypeElement.class::cast)
+                .collect(toSet());
 
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (annotation.getQualifiedName().toString()) {
-            case "com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass":
-                processPlantumlClassAnnotation(annotated);
-                break;
+            //noinspection SwitchStatementWithTooFewBranches
+            switch (annotation.getQualifiedName().toString()) {
+                case "com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass":
+                    processPlantumlClassAnnotation(annotated);
+                    break;
 
-            // Here we could add support for additional top-level annotations
+                // Here we could add support for additional top-level annotations
 
-            default:
-                log.error(
-                    "Unexpected annotation type: {}. Most likely there is a mismatch between the value of "
-                    + "@SupportedAnnotationTypes and the annotation handling implemented in "
-                    + "PlantUmlClassDiagramProcessor.processAnnotation.",
-                    annotation.getQualifiedName().toString());
+                default:
+                    log.error(
+                        "Unexpected annotation type: {}. Most likely there is a mismatch between the value of "
+                        + "@SupportedAnnotationTypes and the annotation handling implemented in "
+                        + "PlantUmlClassDiagramProcessor.processAnnotation.",
+                        annotation.getQualifiedName().toString());
+            }
         }
+    }
+
+    /**
+     * Defines an annotation processing option that can be used to disable the
+     * processor (required to compile this very project).
+     *
+     * @return true if the processor is enabled.
+     */
+    private boolean isEnabled() {
+        return toBoolean(processingEnv.getOptions().getOrDefault("livingdoc.annotation.enabled", "true"));
     }
 
     /**
