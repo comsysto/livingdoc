@@ -11,8 +11,10 @@ import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNotes;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlRelation;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagram;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.DiagramId;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.TypePart;
@@ -57,6 +59,7 @@ import javax.lang.model.element.TypeElement;
 @AutoService(Processor.class)
 @Slf4j
 @PlantUmlClass(diagramIds = PlantUmlClassDiagramProcessor.DIAGRAM_ID)
+@PlantUmlRelation(target = "ClassDiagram", description = "generates/processes")
 public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
     protected static final String KEY_SETTINGS_DIR = "pumlgen.settings.dir";
     protected static final String DEF_SETTINGS_DIR = ".";
@@ -75,6 +78,7 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
     }
 
     @Override
+    @PlantUmlExecutable
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
         log.debug("Environment: {}", processingEnv.getOptions().toString());
 
