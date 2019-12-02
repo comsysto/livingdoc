@@ -3,7 +3,7 @@ package com.comsysto.livingdoc.annotation.processors.plantuml.model;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlField;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
-import com.comsysto.livingdoc.annotation.plantuml.PlantUmlRelation;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlDependency;
 import com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor;
 import lombok.Value;
 
@@ -19,5 +19,5 @@ public class AdditionalRelationPart implements RelationPart {
     TypePart source;
 
     @PlantUmlField
-    PlantUmlRelation relation;
+    PlantUmlDependency relation;
 }

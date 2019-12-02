@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * {@link PlantUmlClass}. This annotation causes the field to be included in
  * the class body and/or as an association to the corresponding type.
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.FIELD, ElementType.METHOD})
 public @interface PlantUmlField {
 

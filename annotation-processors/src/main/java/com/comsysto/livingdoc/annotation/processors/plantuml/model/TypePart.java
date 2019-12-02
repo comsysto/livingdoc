@@ -9,8 +9,8 @@ import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlField;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
-import com.comsysto.livingdoc.annotation.plantuml.PlantUmlRelation;
-import com.comsysto.livingdoc.annotation.plantuml.PlantUmlRelations;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlDependency;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlDependencies;
 import com.comsysto.livingdoc.annotation.processors.plantuml.Optionals;
 import com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.IntrinsicRelationPart.Relation;
@@ -74,7 +74,6 @@ public class TypePart {
      *
      * @return all relations.
      */
-    @PlantUmlExecutable
     public List<IntrinsicRelationPart> getRelations() {
         return concat(
             concat(
@@ -107,11 +106,11 @@ public class TypePart {
             .collect(toList());
     }
 
-    private List<PlantUmlRelation> getPlantUmlRelationAnnotations() {
-        return Optional.ofNullable(typeElement.getAnnotation(PlantUmlRelations.class))
-            .map(PlantUmlRelations::value)
+    private List<PlantUmlDependency> getPlantUmlRelationAnnotations() {
+        return Optional.ofNullable(typeElement.getAnnotation(PlantUmlDependencies.class))
+            .map(PlantUmlDependencies::value)
             .map(Arrays::asList)
-            .orElseGet(() -> Optional.ofNullable(typeElement.getAnnotation(PlantUmlRelation.class))
+            .orElseGet(() -> Optional.ofNullable(typeElement.getAnnotation(PlantUmlDependency.class))
                 .map(Collections::singletonList)
                 .orElse(Collections.emptyList()));
     }
@@ -151,7 +150,6 @@ public class TypePart {
      *
      * @return the association relation part.
      */
-    @PlantUmlExecutable
     public Optional<IntrinsicRelationPart> associationPart(final VariableElement field) {
         final TypeMirror typeMirror = field.asType();
         final List<? extends TypeMirror> typeArguments = typeMirror.getKind() == TypeKind.DECLARED
@@ -189,7 +187,6 @@ public class TypePart {
      *
      * @return the realization parts.
      */
-    @PlantUmlExecutable
     public List<IntrinsicRelationPart> realizationParts() {
         return typeElement.getInterfaces().stream()
             .map(TypePart::toTypeElement)
@@ -230,7 +227,6 @@ public class TypePart {
      * @return the element or an empty optional if the mirror represents a
      * primitive.
      */
-    @PlantUmlExecutable
     public static Optional<TypeElement> toTypeElement(TypeMirror mirror) {
         return mirror instanceof DeclaredType && !mirror.getKind().isPrimitive()
                ? Optional.of((TypeElement) ((DeclaredType) mirror).asElement())
