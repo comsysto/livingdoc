@@ -7,7 +7,7 @@ import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote.Position;
 
 @PlantUmlClass(diagramIds = { "package", "ground-vehicles" })
 @PlantUmlNote(body = "A vehicle that drives on the ground", position = Position.TOP)
-@PlantUmlNote(body = "Multiple notes may be attached to a type", position = Position.RIGHT)
+@PlantUmlNote(body = "Multiple notes may be\nattached to a type", position = Position.RIGHT)
 public abstract class GroundVehicle extends Vehicle {
 
     @PlantUmlField

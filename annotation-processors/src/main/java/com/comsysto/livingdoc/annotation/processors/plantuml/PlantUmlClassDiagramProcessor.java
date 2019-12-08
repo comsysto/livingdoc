@@ -11,14 +11,13 @@ import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlDependency;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNotes;
-import com.comsysto.livingdoc.annotation.plantuml.PlantUmlDependency;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagram;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.DiagramId;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.TypePart;
-import com.google.auto.service.AutoService;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -40,7 +39,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
@@ -56,7 +54,6 @@ import javax.lang.model.element.TypeElement;
 @SupportedAnnotationTypes("com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass")
 @SupportedOptions({KEY_SETTINGS_DIR, KEY_OUT_DIR, KEY_ENABLED})
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@AutoService(Processor.class)
 @Slf4j
 @PlantUmlClass(diagramIds = PlantUmlClassDiagramProcessor.DIAGRAM_ID)
 @PlantUmlDependency(target = "ClassDiagram", description = "generates/processes")
@@ -71,8 +68,7 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
     private final Configuration freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_23);
 
     private String settingsDir;
-    private String outDir;                 
-        
+    private String outDir;
 
     public PlantUmlClassDiagramProcessor() {
         freemarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(this.getClass(), ""));
@@ -81,7 +77,7 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
     @Override
     @PlantUmlExecutable
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
-        log.debug("Environment: {}", processingEnv.getOptions().toString());
+        log.debug("Starting processing of PlantUML annotations.");
 
         settingsDir = processingEnv.getOptions().getOrDefault(KEY_SETTINGS_DIR, DEF_SETTINGS_DIR);
         outDir = processingEnv.getOptions().getOrDefault(KEY_OUT_DIR, DEF_OUT_DIR);
