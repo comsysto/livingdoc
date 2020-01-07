@@ -200,7 +200,7 @@ model: inheritance (both realization and implementation) as well as field refere
 helps the reader understand the software fully
 +
 NOTE: We did not consider it useful to render the contents of JavaDoc comments in notes. First, comments use HTML markup
-and PlatUML uses the Creole markup language. Second, a JavaDoc comment that fully describes a complex type can be very
+and PlantUML uses the Creole markup language. Second, a JavaDoc comment that fully describes a complex type can be very
 large. It makes much more sense to write a brief (and possible redundant) description into the annotation itself.
 
 ==== Example 2: Selected classes only
