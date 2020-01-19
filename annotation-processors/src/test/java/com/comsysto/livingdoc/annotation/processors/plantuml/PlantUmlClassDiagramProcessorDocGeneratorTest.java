@@ -7,7 +7,6 @@ import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
 import lombok.SneakyThrows;
 
-import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,11 +20,6 @@ import javax.tools.JavaFileObject;
 public class PlantUmlClassDiagramProcessorDocGeneratorTest {
     private static final String SRC_DIR = "pumlgen.src.dir";
     private Optional<File> srcRoot;
-
-    @BeforeClass
-    public static void setupBeforeClass() {
-        BasicConfigurator.configure();
-    }
 
     @Before
     public void setUp() {

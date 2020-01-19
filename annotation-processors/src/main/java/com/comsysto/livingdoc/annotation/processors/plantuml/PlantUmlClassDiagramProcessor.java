@@ -4,10 +4,12 @@ import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClas
 import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor.KEY_OUT_DIR;
 import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor.KEY_SETTINGS_DIR;
 import static java.util.Arrays.stream;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static javax.tools.Diagnostic.Kind.WARNING;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
@@ -31,6 +33,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +48,7 @@ import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
+import javax.tools.JavaFileObject;
 
 /**
  * The main processor class that handles top-level annotations for UMl diagrams
@@ -61,9 +65,9 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
     protected static final String KEY_SETTINGS_DIR = "pumlgen.settings.dir";
     protected static final String DEF_SETTINGS_DIR = ".";
     protected static final String KEY_OUT_DIR = "pumlgen.out.dir";
-    protected static final String DEF_OUT_DIR = "./out";
     protected static final String KEY_ENABLED = "pumlgen.enabled";
     protected static final String DEF_ENABLED = "true";
+    protected static final String DEF_OUT_DIR = "./out";
     public static final String DIAGRAM_ID = "annotation-processor";
     private final Configuration freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_23);
 
@@ -80,7 +84,7 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
         log.debug("Starting processing of PlantUML annotations.");
 
         settingsDir = processingEnv.getOptions().getOrDefault(KEY_SETTINGS_DIR, DEF_SETTINGS_DIR);
-        outDir = processingEnv.getOptions().getOrDefault(KEY_OUT_DIR, DEF_OUT_DIR);
+        outDir = processingEnv.getOptions().getOrDefault(KEY_OUT_DIR, getSourcePath());
 
         if (!roundEnv.errorRaised() && !roundEnv.processingOver()) {
             annotations.forEach(annotation -> processAnnotation(annotation, roundEnv));
@@ -169,14 +173,14 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
             .map(Arrays::asList)
             .orElseGet(() -> Optional.ofNullable(annotated.getAnnotation(PlantUmlNote.class))
                 .map(Collections::singletonList)
-                .orElse(Collections.emptyList()));
+                .orElse(emptyList()));
     }
 
     private void createDiagram(final DiagramId diagramId, final List<TypePart> parts) {
         final File       outFile  = getOutFile(diagramId);
         final Properties settings = loadSettings(diagramId);
 
-        log.debug("Create PlantUML diagram: {}", outFile);
+        log.debug("Create PlantUML diagram: {}", outFile.getAbsoluteFile());
 
         try (final BufferedWriter out = new BufferedWriter(new FileWriter(outFile))) {
             final Template template = freemarkerConfiguration.getTemplate("class-diagram.puml.ftl");
@@ -202,12 +206,26 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
         return diagramFile;
     }
 
+    private String getSourcePath() {
+        try {
+            final JavaFileObject generatedObject = processingEnv.getFiler()
+                .createSourceFile("test_" + getClass().getSimpleName());
+            final Writer writer = generatedObject.openWriter();
+            final File sourcePath = new File(generatedObject.toUri().getPath()).getParentFile();
+
+            writer.close();
+            generatedObject.delete();
+            return sourcePath.getAbsolutePath();
+        } catch (IOException e) {
+            processingEnv.getMessager().printMessage(WARNING, "Unable to determine source file path!");
+            return DEF_OUT_DIR;
+        }
+    }
+
     private Properties loadSettings(final DiagramId id) {
-        final File settingsFile = new File(
-            settingsDir,
-            id.getValue() + "_class.properties");
+        final File settingsFile = new File(settingsDir, id.getValue() + "_class.properties");
         final Properties settings = new Properties();
-        
+
         try (final FileReader in = new FileReader(settingsFile)) {
             log.debug("Settings file: {}", settingsFile.getAbsoluteFile());
             settings.load(in);
