@@ -82,7 +82,7 @@ The core principles of Living Documentation are:
 * It is *reliable* - all documentation products are always accurate and in sync with the actual code
 * Producing and updating it is *low effort*
 * It is both a product and a medium of *collaboration* between all involved people
-* It is *insightful* for ist consumers and sheds light on the important aspects of the system
+* It is *insightful* for its consumers and sheds light on the important aspects of the system
 
 One of the crucial insights taken from Cyrille's book is that it *is* possible to produce a lot of helpful documentation
 artifacts by traversing the code using automated generators. One of the key difference to most existing tools that
@@ -200,7 +200,7 @@ model: inheritance (both realization and implementation) as well as field refere
 helps the reader understand the software fully
 +
 NOTE: We did not consider it useful to render the contents of JavaDoc comments in notes. First, comments use HTML markup
-and PlatUML uses the Creole markup language. Second, a JavaDoc comment that fully describes a complex type can be very
+and PlantUML uses the Creole markup language. Second, a JavaDoc comment that fully describes a complex type can be very
 large. It makes much more sense to write a brief (and possible redundant) description into the annotation itself.
 
 ==== Example 2: Selected classes only
