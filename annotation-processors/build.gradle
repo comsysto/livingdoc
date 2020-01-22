@@ -24,6 +24,7 @@ task copyFormat(type: Copy) {
 }
 
 test {
+    systemProperty 'pumlgen.src.dir', './src/main/java'
     systemProperty 'pumlgen.test.dir', './src/test/java'
 }
 tasks.test.dependsOn("copyFormat")

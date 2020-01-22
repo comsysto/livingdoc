@@ -1,12 +1,19 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml.model;
 
-import static com.comsysto.livingdoc.annotation.processors.plantuml.model.RelationPart.Relation.ASSOCIATION;
-import static com.comsysto.livingdoc.annotation.processors.plantuml.model.RelationPart.Relation.INHERITANCE;
-import static com.comsysto.livingdoc.annotation.processors.plantuml.model.RelationPart.Relation.REALIZATION;
+import static com.comsysto.livingdoc.annotation.processors.plantuml.model.IntrinsicRelationPart.Relation.ASSOCIATION;
+import static com.comsysto.livingdoc.annotation.processors.plantuml.model.IntrinsicRelationPart.Relation.INHERITANCE;
+import static com.comsysto.livingdoc.annotation.processors.plantuml.model.IntrinsicRelationPart.Relation.REALIZATION;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlField;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote.Position;
+import com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor;
 import freemarker.template.DefaultObjectWrapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,7 +25,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.lang.model.element.Name;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.WildcardType;
 
 /**
  * Models a class diagram. The methods of this class are manly used by the
@@ -27,21 +37,27 @@ import javax.lang.model.type.TypeMirror;
 @SuppressWarnings("unused")
 @EqualsAndHashCode(callSuper = true)
 @Data
+@PlantUmlClass(diagramIds = PlantUmlClassDiagramProcessor.DIAGRAM_ID)
+@PlantUmlNote(body = "Used as input for a freemarker template\nthat uses the provided fields and methods",
+              position = Position.RIGHT)
 public class ClassDiagram extends DefaultObjectWrapper {
 
     /**
      * the diagram title.
      */
+    @PlantUmlField(showAssociation = false)
     private final String title;
 
     /**
      * Any PlantUml files to be included.
      */
+    @PlantUmlField(showAssociation = false)
     private final List<String> includeFiles;
 
     /**
      * The type parts to be rendered in this diagram.
      */
+    @PlantUmlField
     private final List<TypePart> parts;
 
     public String getTitle() {
@@ -55,7 +71,8 @@ public class ClassDiagram extends DefaultObjectWrapper {
      *
      * @return the inheritance relations.
      */
-    public List<RelationPart> getInheritanceRelations() {
+    @PlantUmlExecutable
+    public List<IntrinsicRelationPart> getInheritanceRelations() {
         final Set<Name> whitelist = renderedTypeNames();
 
         return parts.stream()
@@ -71,7 +88,8 @@ public class ClassDiagram extends DefaultObjectWrapper {
      *
      * @return the list of association relation parts.
      */
-    public List<RelationPart> getAssociations() {
+    @PlantUmlExecutable
+    public List<IntrinsicRelationPart> getAssociations() {
         final Set<Name> whitelist = renderedTypeNames();
 
         return parts.stream()
@@ -83,16 +101,64 @@ public class ClassDiagram extends DefaultObjectWrapper {
     }
 
     /**
+     * Get all additional relations within this diagram.
+     *
+     * @return the list of association relation parts.
+     */
+    @PlantUmlExecutable
+    public List<AdditionalRelationPart> getAdditionalRelations() {
+        final Set<String> whitelist = renderedTypeNames().stream()
+            .map(Name::toString)
+            .collect(toSet());
+
+        return parts.stream()
+            .map(TypePart::getAdditionalRelations)
+            .flatMap(List::stream)
+            .filter(part -> whitelist.contains(part.getRelation().target()))
+            .collect(toList());
+    }
+
+    /**
      * Get the simple name of a type.
      *
      * @param typeMirror the type mirror.
      *
      * @return the simple name.
      */
+    @PlantUmlExecutable
     public static String simpleTypeName(TypeMirror typeMirror) {
-        return typeMirror.toString().contains(".")
-               ? substringAfterLast(typeMirror.toString(), ".")
-               : typeMirror.toString();
+        final List<? extends TypeMirror> typeArguments = typeMirror.getKind() == TypeKind.DECLARED
+                                                         ? ((DeclaredType) typeMirror).getTypeArguments()
+                                                         : emptyList();
+        switch (typeMirror.getKind()) {
+            case DECLARED:
+                return declaredTypeSimpleName((DeclaredType) typeMirror, typeArguments);
+            case WILDCARD:
+                return wildcardTypeSimpleName((WildcardType) typeMirror);
+            default:
+                return typeMirror.toString();
+        }
+    }
+
+    private static String declaredTypeSimpleName(
+        final DeclaredType typeMirror,
+        final List<? extends TypeMirror> typeArguments)
+    {
+        return typeMirror.asElement().getSimpleName().toString()
+               + (typeArguments.isEmpty() ? "" : typeParametersString(typeArguments));
+    }
+
+    private static String wildcardTypeSimpleName(final WildcardType typeMirror) {
+        final TypeMirror extendsBound = typeMirror.getExtendsBound();
+        final TypeMirror superBound = typeMirror.getSuperBound();
+        return extendsBound != null ? String.format("? extends %s", simpleTypeName(extendsBound))
+                                    : String.format("? super %s", simpleTypeName(superBound));
+    }
+
+    private static String typeParametersString(final List<? extends TypeMirror> typeArguments) {
+        return typeArguments.stream()
+            .map(ClassDiagram::simpleTypeName)
+            .collect(joining(", ", "<", ">"));
     }
 
     /**
@@ -109,13 +175,13 @@ public class ClassDiagram extends DefaultObjectWrapper {
     /**
      * Determine if a relation should be rendered in this diagram.
      *
-     * @param relationPart the relation to be checked.
+     * @param intrinsicRelationPart the relation to be checked.
      * @param whitelist    the list of type names to be rendered in this diagram.
      *
      * @return true if the type should be rendered.
      */
-    private boolean shouldBeRendered(final RelationPart relationPart, final Set<Name> whitelist) {
-        return whitelist.stream().anyMatch(name -> name.contentEquals(relationPart.getRight().getSimpleName()))
-               && whitelist.stream().anyMatch(name -> name.contentEquals(relationPart.getLeft().getSimpleName()));
+    private boolean shouldBeRendered(final IntrinsicRelationPart intrinsicRelationPart, final Set<Name> whitelist) {
+        return whitelist.stream().anyMatch(name -> name.contentEquals(intrinsicRelationPart.getRight().getSimpleName()))
+               && whitelist.stream().anyMatch(name -> name.contentEquals(intrinsicRelationPart.getLeft().getSimpleName()));
     }
 }

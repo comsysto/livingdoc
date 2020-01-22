@@ -1,5 +1,5 @@
-:imagesoutdir: doc/images
-:imagesdir: doc/images
+:imagesdir: ./doc/images
+:imagesoutdir: ./doc/images
 
 ifdef::env-github[]
 :tip-caption: :bulb:
@@ -13,112 +13,334 @@ ifndef::env-github[]
 :icons: font
 endif::[]
 
-:toc: 
+= Living Diagrams
+
+:toc:
 :toc-placement!:
 
-== Living Documentation Lab
-
-=== Motivation
-Documentation is hard - every programmer knows this. It's also boring and repetitive, and the result often looks ugly
+== Motivation
+Documentation is hard. Every programmer knows this. It's also boring and repetitive, and the result often looks ugly
 and is hard to read (because not all programmers are poets). The fact that written documentation is usually outdated
 before it has been finished doesn't make it any better.
-
-Therefore, writing documentation is usually something programmers try to avoid.
+                                                        
+Therefore, writing documentation it is usually something programmers try to avoid.
 
 There is a simple truth you will often hear when talking to programmers about documentation: the most accurate
 documentation is the code itself. It's the only thing that won't become outdated, won't lie to you, and will always be
 complete.
 
 But code is difficult to understand. If you have ever tried to learn about a code base without written documentation,
-you'll know that it is very, very hard to glean the truth from it.
+you'll know that it is very, very hard to glean anything useful from it.
 
-==== Living Diagrams
+=== Living Diagrams
 
-===== History
-The idea to generate diagrams from source code is not new, but has a long history in software development,
-a history that is often quite disappointing. Some examples are:
+==== History
+The idea to generate UML diagrams from source code isn't new. Actually, it has a long history in software development,
+a history that is often quite disappointing. Many tools provide reverse engineering capabilities, for example:
 
 * UML tool suites
 * IDEs
-* Dedicated Generators
+* Dedicated generators
 
-====== UML tool suites
-There are tools like Together, Rational Rose, Enterprise Architect etc. These often do a decent job generating UML
-diagrams and sometimes even provide full Roundtrip-Engineering capabilities. However, they are usually very
-expensive, have a significant learning curve and force the development team to fully buy into their proprietary way of
-working.
+===== UML tool suites
+
+There are tools like Together, Rational Rose, Enterprise Architect etc. They often do a decent job generating UML
+diagrams and sometimes even provide full Roundtrip-Engineering capabilities. However, they are usually extremely
+expensive, have a high learning curve and force the development team to fully buy into their proprietary way of working.
 In addition, the resulting diagrams are difficult to integrate into the actual documentation written outside of the tool
 itself, so often users will find themselves resorting to pasting image files that are - again - difficult to keep
 up-to-date.
 
-====== IDEs
-// IntelliJ, Netbeans, Eclipse
-include::doc/under-construction.adoc[]
+===== IDEs
 
-====== Dedicated generators
-// e.g. https://github.com/gboersma/uml-java-doclet
-include::doc/under-construction.adoc[]
+IDEs like Netbeans, Eclipse or IntelliJ play somewhat in the same league. Their reverse engineering capabilities are
+usually less thorough, but also come at a cheaper price. Sadly, though, the IDEs' UML modules share most of the other
+negative aspects of their expensive brethren. For example, here is a diagram as IntelliJ IDEA would render it:
 
-=== The PlantUML Class Diagram Generator
-Our generator is different from all theses examples because it follows the ideas of Living Documentation.
+.Test classes hierarchy generated using IntelliJ IDEA
+image::idea-package-example.png[Package diagram rendered by IntelliJ IDEA, float=left]
 
-==== Design principles
-The generator is designed around a limited set of principles derived from the idea of Living Documentation:
+While this is a clean and nicely drawn UML diagram, the developer has not much influence on how it looks. For example,
+it cannot show field associations, and neither is there a possibility to include notes or comments to explain things.
+It is also impossible to exclude unwanted parts from the diagram or make references to types outside the package.
 
+'''
+
+===== Dedicated generators
+Quite contrary to the previously mentioned reverse engineering tools, dedicated UML diagram generators are usually cheap
+or even free of charge, for example the https://www.spinellis.gr/umlgraph/javadoc/index.html[UMLGraph JavaDoc doclet].
+Since they can usually be made part of automated toolchains, it is often a lot easier to integrate their products into
+the parts of the documentation that live in close proximity to the code, for example JavaDocs. Despite these positive
+aspects, it's usually still very difficult to influence what the diagrams display, and how.
+
+==== A new concept: Living Documentation
+'Living Documentation' is a term coined by Gojko Adzik in his book https://gojko.net/books/specification-by-example/?src=/resources.html[Specification by example].
+His work (that is mostly about BDD - Behavior Driven Development) gave inspiration to the work of Cyrille Martraire, a
+french software engineer who tries to take the approach to a new level in his book https://leanpub.com/livingdocumentation[Living Documentation].
+The core principles of Living Documentation are:
+
+* It is *reliable* - all documentation products are always accurate and in sync with the actual code
+* Producing and updating it is *low effort*
+* It is both a product and a medium of *collaboration* between all involved people
+* It is *insightful* for its consumers and sheds light on the important aspects of the system
+
+One of the crucial insights taken from Cyrille's book is that it *is* possible to produce a lot of helpful documentation
+artifacts by traversing the code using automated generators. One of the key difference to most existing tools that
+generate documentation (including diagrams) from code is that the tool chain is written in such a way that it permits
+the development team to adapt and enhance what comes out of it, producing results that both have real value and are
+still as close to the single source of truth (the code) as possible.
+
+In this blog post, we build on this concept but concentrate on a subset of the ideas from Living Documentation:
+**Living Diagrams**. We'd like to generate UML Diagrams, namely UML Class Diagrams, directly from the code. So, let us
+intruce the PlantUML Class Diagram Generator.
+
+== The PlantUML Class Diagram Generator
+
+The PlantUML Class Diagram Generator is a tool that produces PlantUML Class diagrams from Java source code.
+
+.What is PlantUML?
+****
+https://plantuml.com/[PlantUML] is a tool that generates various types of UML diagrams from a written specification. It
+has a simple but powerful language for describing UML diagrams, with further annotation and styling capabilities that
+allow producing diagrams that are both useful and nice looking. Some of the supported diagram types are:
+
+* Use Case
+* Class
+* Sequence
+* Activity
+* Component
+
+****
+
+The PlantUML Class Diagram Processor creates only class diagrams and can be used to document class hierarchies that
+live in a specific package. Due to PlantUML's ability to import diagrams into other diagrams, it is also possible to
+display whole package hierarchies in a songle diagram. However, thanks to its underlying concepts, these diagrams
+can be tailored to show only classes that are relevant for specific use cases, so they won't overwhelm the reader with
+superfluous or redundant information.
+
+=== Design principles
+The generator is designed around a limited set of principles derived from the ideas of Living Documentation:
+
+[horizontal]
 Relevance::
 The programmer decides what elements from the sources should show up in generated diagrams, so they are always relevant
-to the documentation
+to the use case depicted
 Proximity::
-Diagram controls are an intrinsic part of the source code
+Diagram controls are an intrinsic part of the source code, so its unlikely they'll become outdated
 Configurability::
-Diagram Controls give the developer a lot of control over what is generated
+Diagram Controls give the developer a lot of control over what is generated and may be annotated with additional
+information, e.g. comments
 Currentness::
 Diagrams are re-generated with every build
 
-==== PlantUML annotation library
-At the moment, the annotation library contains only a few annotations that can be used for class diagrams:
+=== Annotation library
+At the moment, the annotation library contains following annotations for class diagrams:
 
-link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlClass.java[@PlantUmlClass]::
+link:annotations/src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlClass.java[@PlantUmlClass]::
 This is the main annotation to be used for class diagrams. When added to a Java type (interface, class or enum), a
-representation of this type is included in one or more diagrams
-link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlField.java[@PlantUmlField]::
+representation of this type is included in one or more diagrams.
+link:annotations/src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlField.java[@PlantUmlField]::
 This annotation may be added to a field within a type already annotated with **@PlantUmlClass**. It will render the
 field as part of the class body and/or add an association to the field's type, provided that type is also part of the
-diagram
-link:src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlNote.java[@PlantUmlNote]::
-This annotation may be used to associate one or more UML notes with a type, providing further textual description
+diagram.
+link:annotations/src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlExecutable.java[@PlantUmlExecutable]::
+Annotation for methods that should show up within a type already annotated with **@PlantUmlClass**. It will render the
+method as part of the class body, provided that type is also part of the diagram.
+link:annotations/src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlNote.java[@PlantUmlNote]::
+This annotation may be used to associate one or more UML notes with a type, providing further textual description.
+link:annotations/src/main/java/com/comsysto/livingdoc/annotation/plantuml/PlantUmlDependency.java[@PlantUmlDependency]::
+Can be used to draw additional dependency relations between types that are not directly connected via an
+association.
 
-==== PlantUML annotation processor
+=== Annotation processor
 The annotation processor is a normal Java annotation processor that can be included easily as a Java compiler argument -
 either using the programmer's favorite Java IDE's project configuration, or as part of the build process.
 The annotation processor produces a model of the elements to be rendered in the resulting diagrams and then outputs the
-PlantUML source code.
+PlantUML source code. The annotation processor can be configured using the following options (specified using the ``-A``
+parameter of the Java compiler):
 
-===== PlantUML diagram model
+.PlantUML Class Diagram Processor options
+|===
+|Option |Default value
 
+|**pumlgen.settings.dir** +
+The directory where the annotation processor will search for a file ``${diagramId}_class.properties`` for additional
+diagram settings
+|``.`` (the current directory)
+
+|**pumlgen.out.dir** +
+The directory where the annotation processor will write diagram files
+|``./out``
+
+|**pumlgen.enabled** +                                             
+This setting may be used to completely disable the processor at compilation time despite its presence on the classpath
+|``true``
+|===
+
+=== Examples
+The test sources contain an artificial class hierarchy that models different types of vehicles and is used as a (quite
+simple) example. Please have a look at the diagram - it is auto-generated using the annotation processor:
+
+==== Example 1: The whole test classes hierarchy
+
+.Test classes hierarchy generated using the processor
 ifdef::env-github[]
-image::annotation-processors/doc/annotation-processor_class.png[Annotation processor classes]
-endif::[]
-ifndef::env-github[]
-plantuml::annotation-processors/doc/annotation-processor_class.puml[]
-endif::[]
-
-NOTE: It may occur to the reader that the diagram above is a handwritten PlantUML class diagram - it hasn't been
-auto-generated using the annotation processor. So, why are we not 'eating our own dog food' here?
-The reason is simple: while it is possible to use an annotation processor on itself, it's definitely not a good idea
-because a functional error in the processor or its templates might stop the code from compiling and create a cyclic
-issue that is difficult to debug.
-
-=== Example
-As an example, the test sources contain an artificial class hierarchy that models different types of vehicles. The
-following diagram is auto-generated using the annotation processor - you can verify this by changing something in the
-code and re-run the build:
-
-ifdef::env-github[]
-image::annotation-processors/doc/package_class.png[Annotation processor classes]
+image::package_class.png[Annotation processor classes, float=right]
 endif::[]
 ifndef::env-github[]
 plantuml::annotation-processors/out/package_class.puml[imagesoutdir="./annotation-processors/doc"]
+endif::[]
+
+The first example displays the hierarchy of all annotated classes in the package. We find it notable how clean and
+expressive this diagram is compared to diagrams rendered using conventional means:
+
+* It shows all the associations between the classes that the annotation processor managed to discern from the Java type
+model: inheritance (both realization and implementation) as well as field references
+* It has a note. In our view, notes are often the single thing that converts a say-nothing diagram into something that
+helps the reader understand the software fully
++
+NOTE: We did not consider it useful to render the contents of JavaDoc comments in notes. First, comments use HTML markup
+and PlantUML uses the Creole markup language. Second, a JavaDoc comment that fully describes a complex type can be very
+large. It makes much more sense to write a brief (and possible redundant) description into the annotation itself.
+
+==== Example 2: Selected classes only
+
+.Grund vehicles
+ifdef::env-github[]
+image::ground-vehicles_class.png[Annotation processor classes, float=left]
+endif::[]
+ifndef::env-github[]
+plantuml::annotation-processors/out/ground-vehicles_class.puml[imagesoutdir="./annotation-processors/doc", float=left]
+endif::[]
+
+It is also possible to render multiple different diagrams from the same sources. This is controlled through the
+``diagramIds`` attribute of the ``@PlantUmlClass`` annotation. This is a list of strings that define the diagrams where
+the type will appear.
+
+[horizontal]
+DiagramId:: The diagram ID is the part of the filename that comes before the ``_class.puml``. The default diagram ID is
+is therefore **package**. The ground vehicles diagram's ID is **ground-vehicles**.
+
+'''
+
+== Annotation processor internals
+
+In this section, we will look at the internal structure of the annotation processor. To reach our goal to auto-generate
+PlantUML class diagrams, we had to solve the following problems:
+
+* Annotation definition
+* How to implement an annotation processor
+* How to produce the diagram
+
+=== Annotation definition
+This is actually the easiest part. We begin with the top-most annotation we want to process, the ``@PlantUmlClass``.
+From there, we consider what diagram elements we want to display and what additional information is required to enrich
+the resulting diagrams:
+
+Type elements:: A type in the class diagram is created from a class, interface or enum in Java. All required information
+about the type itself can be gleaned from the Java source code except for the following:
+
+* We want to know in which diagrams the type will appear, so we introduce an attribute ``diagramIds``
+* There should be a possibility to attach a note to the type. For this, an additional annotation is created, the
+``@PlantUmlNote``, with an attribute ``body`` that defines the text body (optionally with
+link:http://plantuml.com/creole[Creole] markup), and an attribute ``position`` that permits to position the note in
+relation to the element it's attached to.
+
+Fields and methods:: As with types, we do not want to indiscriminately include all fields and methods in the class
+diagram. So we need at least one other annotation to mark fields and methods to be displayed.
+Considering that there may be more (and quite different) information we need to provide depending on the type of
+element, we decided to actually have two separate annotations ``PlantUmlField`` for fields and ``PlantUmlExecutable``
+for methods and constructors.
+
+Dependency Relations:: Finally, we want to be able to define relations between classes that are not visible in the
+source code (through fields). In UML, these are called dependency relations and depicted using a dashed line between
+elements. So there is another annotation ``@PlantUmlDependency`` with an optional ``description``.
+
+.How to create an annotation in Java
+****
+Defining a Java annotation is clearly documented and the knowledge how to do this should be a part of every Java
+programmer's toolbox:
+
+[source,java]
+----
+@Target({ ElementType.TYPE }) // <2>
+@Retention(RetentionPolicy.SOURCE) // <3>
+public @interface PlantUmlClass { // <1>
+
+    String[] diagramIds() default { "package" }; // <4>
+}
+----
+<1> An annotation is a special form of interface, identified by the keyword ``@interface``
+<2> For every annotation, a list of possible __targets__ needs to be specified identifying the elements where the
+annotation is allowed to appear (e.g. type, field, method, ...)
+<3> Also for every annotation, the programmer should specify the __retention policy__. This tells the compiler what to do
+with the annotation after processing it. Most Java programmers choose ``RetentionPolicy.RUNTIME`` quite automatically
+because (1) its the retention policy used in most examples and (2) because a lot of annotations are processed at runtime
+using reflection. However, the annotations of the PlantUML class diagram processor will be required neither by the
+compiler nor at runtime, so we discard them after the processing phase (``RetentionPolicy.SOURCE``)
+****
+
+=== How to implement an annotation processor
+
+All Java programmers know how to use annotations, and most of the more senior ones know how to write and process them -
+at runtime. To process annotations at compile time, however, requires some additional steps:
+
+* Implement the Processor interface
+* Make the processor known to the Java compiler
+* Implement logic based on the Java (annotation processing) language model
+
+==== Implement the processor interface
+
+[source,java]
+----
+@SupportedAnnotationTypes("com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass")  // <3>
+@SupportedOptions({KEY_SETTINGS_DIR, KEY_OUT_DIR, KEY_ENABLED})  // <4>
+@SupportedSourceVersion(SourceVersion.RELEASE_8)  // <5>
+public class PlantUmlClassDiagramProcessor extends AbstractProcessor { // <1>
+    @Override
+    public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
+        // ... <2>
+    }
+
+    // ...
+}
+----
+<1> All annotation processors must implement the interface
+link:https://docs.oracle.com/javase/8/docs/api/javax/annotation/processing/Processor.html[Processor] or its descendant
+link:https://docs.oracle.com/javase/8/docs/api/javax/annotation/processing/AbstractProcessor.html[AbstractProcessor]
+<2> Annotation processors need to define the annotations they process. This list doesn't have to include __all__
+annotations used by the processor, however! Only the top-level annotations that should be delivered by the processing
+framework when it calls the ``process(..)`` method are required here - in our case, that's only the annotation
+``@PlantUmlType``
+<3> Processors need to define the options they proccess - those put on the ``javac`` command line using the ``-A``
+parameter
+<4> Processors need to define the Java source version they understand
+<5> The current version of the processor has been tested with Java 8
+
+==== Add the required meta information
+In addition to the implementation processor, we have to add the following file:
+
+.META-INF/services/javax.annotation.processing.Processor
+[source]
+----
+com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor
+----
+
+This file, containing only the fully qualified class name of the processor, causes it to be registered with the
+annotation processing environment.
+
+TIP: Alternatively, https://github.com/google/auto/tree/master/service:[Google Autoservice] may be used to autogenerate this file.
+
+=== Data Model
+
+Our little project would look quite bad if we weren't 'eating our own dog food'. So the centerpiece of our documentation
+for the PlantUML Class Diagram generator is a class diagram, fully auto-generated from annotations:
+
+ifdef::env-github[]
+image::annotation-processor_class.png[Annotation processor classes]
+endif::[]                     
+ifndef::env-github[]
+plantuml::annotation-processors/out/annotation-processor_class.puml[]
 endif::[]
 
 == What's next?
@@ -126,7 +348,6 @@ The first version of something is seldom perfect. There is a lot more that could
 
 * Support for additional class diagram elements
 * Support for other diagram types
-* Refactoring
 
 === Support for additional class diagram elements
 
@@ -148,10 +369,10 @@ For us, generating class diagrams is only a first step. Going further, we'd like
 types. The class diagram was the obvious place to start, since its features closely match the information that can be
 gleaned from the information harvested by the annotation processing environment.
 
-=== Refactoring
-
-The current model can be extended to support at least some of those things. We may, however, reach a point in the future
-where our first shot at modelling reaches its limits
-
-
+== Conclusion
+In this blog post, we have shown that it is well possible to generate useful diagrams from source code by giving the
+developers a big deal of influence on the outcome using Java annotations, along with a tool set that, while still being
+in an early stage of development, can already produce very nice and fully accurate class diagrams. We hope that this
+blog post will be the first in a series in which we will try to extend its capabilities into a complete tool suite that
+helps developers in writing documentation that is accurate, close to the code, and always up to date.
 

@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-public @interface PlantUmlNotes {
-    PlantUmlNote[] value() default {};
+public @interface PlantUmlDependency {
+    String target();
+    String description() default "";
 }

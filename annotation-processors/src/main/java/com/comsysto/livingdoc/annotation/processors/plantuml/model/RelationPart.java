@@ -1,36 +1,12 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml.model;
 
-import lombok.Value;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
+import com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable;
+import com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor;
 
-import javax.lang.model.element.TypeElement;
+@PlantUmlClass(diagramIds = PlantUmlClassDiagramProcessor.DIAGRAM_ID)
+public interface RelationPart {
 
-/**
- * A diagram part that represents a relation between two type elements.
- */
-@Value
-public class RelationPart {
-
-    RelationId id;
-    TypeElement left;
-    TypeElement right;
-    Relation relation;
-
-    public enum Relation {
-
-        /**
-         * The right type realizes (implements) the left type.
-         */
-        REALIZATION,
-
-        /**
-         * The right type extends the left type.
-         */
-        INHERITANCE,
-
-        /**
-         * The left type references the right type in form of a directed
-         * association.
-         */
-        ASSOCIATION
-    }
+    @PlantUmlExecutable
+    RelationId getId();
 }

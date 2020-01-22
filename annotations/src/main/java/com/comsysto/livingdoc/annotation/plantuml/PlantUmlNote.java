@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * Annotation that models a note to be included in a class diagram. Multiple
  * notes may be attached to the same type.
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
 @Repeatable(PlantUmlNotes.class)
 public @interface PlantUmlNote {

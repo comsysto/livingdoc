@@ -20,5 +20,8 @@ title ${title}
 <#list getAssociations() as association>
     <@types.renderAssociation association/>
 </#list>
+<#list getAdditionalRelations() as additionalRelation>
+    ${additionalRelation.source.name} ..> ${additionalRelation.relation.target()}: ${additionalRelation.relation.description()}
+</#list>
 
 @enduml

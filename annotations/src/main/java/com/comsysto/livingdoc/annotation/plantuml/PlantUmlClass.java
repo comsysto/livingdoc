@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * Annotation to be attached to a type that should be rendered as part of one or
  * more <a href="http://plantuml.com/class-diagram">PlantUML class diagram</a>s.
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target({ ElementType.TYPE })
 public @interface PlantUmlClass {
 

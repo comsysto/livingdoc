@@ -1,6 +1,5 @@
 package com.comsysto.livingdoc.annotation.processors.plantuml;
 
-import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor.DEF_OUT_DIR;
 import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor.KEY_OUT_DIR;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
@@ -13,9 +12,7 @@ import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
 import lombok.SneakyThrows;
 
-import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -30,11 +27,6 @@ public class PlantUmlClassDiagramProcessorTest {
 
     protected static final String TEST_DIR = "pumlgen.test.dir";
     private File exampleDir;
-
-    @BeforeClass
-    public static void setupBeforeClass() {
-        BasicConfigurator.configure();
-    }
 
     @Before
     public void setUp() {
@@ -68,7 +60,7 @@ public class PlantUmlClassDiagramProcessorTest {
 
         // Check that the file exists and contains a selected sample of expected
         // lines:
-        assertThat(new File(System.getProperty(KEY_OUT_DIR, DEF_OUT_DIR), "package_class.puml"))
+        assertThat(new File(System.getProperty(KEY_OUT_DIR, "out"), "package_class.puml"))
             .exists()
             .satisfies(file -> assertThat(lines(file))
                 .contains(

@@ -4,8 +4,8 @@ plugins {
 }
 
 allprojects {
-    apply plugin: 'maven-publish'
     apply plugin: 'java'
+    apply plugin: 'maven-publish'
 
     sourceCompatibility = 1.8
     group = 'com.comsysto.livingdoc'
@@ -24,13 +24,13 @@ lombok {
 
 ext {
     libs = [
-            'commons-lang3'   : 'org.apache.commons:commons-lang3:3.8.1',
+            'commons-lang3'   : 'org.apache.commons:commons-lang3:3.9',
             'auto-service'    : 'com.google.auto.service:auto-service:1.0-rc4',
             'freemarker'      : 'org.freemarker:freemarker:2.3.23',
             'javaparser'      : 'com.github.javaparser:javaparser-core:3.14.5',
             'javasymbolsolver': 'com.github.javaparser:javaparser-symbol-solver-core:3.14.5',
             'slf4j-api'       : 'org.slf4j:slf4j-api:1.7.25',
-            'slf4j'           : 'org.slf4j:slf4j-log4j12:1.7.25',
+            'slf4j'           : 'ch.qos.logback:logback-classic:1.2.3',
             'lombok'          : 'org.projectlombok:lombok:1.18.4',
             'junit'           : 'junit:junit:4.12',
             'compile-testing' : 'com.google.testing.compile:compile-testing:0.15',

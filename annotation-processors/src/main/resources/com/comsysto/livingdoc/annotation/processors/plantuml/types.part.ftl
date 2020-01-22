@@ -1,4 +1,3 @@
-
 <#macro renderType part>
 <#-- @ftlvariable name="part" type="com.comsysto.livingdoc.annotation.processors.plantuml.model.TypePart" -->
     <#if part.isInterface()>
@@ -10,10 +9,20 @@
     <#else>
         <#local typeDeclaration="class">
     </#if>
-${typeDeclaration} ${part.name}<#assign fields=part.getAnnotatedFields()><#if fields?has_content> {
-<#list fields as field>
-${simpleTypeName(field.asType())} ${field.simpleName}
-</#list>
+    <#assign fields=part.getAnnotatedFields()>
+    <#assign methods=part.getAnnotatedMethods()>
+    <#assign hasBody=fields?has_content || methods?has_content>
+    <#if hasBody>
+        
+    </#if>
+${typeDeclaration} ${part.name}<#if hasBody> {
+    <#list fields as field>
+    ${simpleTypeName(field.asType())} ${field.simpleName}
+    </#list>
+
+    <#list methods as method>
+    ${simpleTypeName(method.returnType)} ${method.simpleName}(<#list method.parameters as parameter>${simpleTypeName(parameter.asType())} ${parameter.simpleName}<#if parameter?has_next>, </#if></#list>)
+    </#list>
 }
 </#if>
     
