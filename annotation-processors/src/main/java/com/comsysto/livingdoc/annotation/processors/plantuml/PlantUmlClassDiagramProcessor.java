@@ -3,8 +3,8 @@ package com.comsysto.livingdoc.annotation.processors.plantuml;
 import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor.KEY_ENABLED;
 import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor.KEY_OUT_DIR;
 import static com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProcessor.KEY_SETTINGS_DIR;
+import static com.google.common.collect.Sets.union;
 import static java.util.Arrays.stream;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
@@ -15,14 +15,12 @@ import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlDependency;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable;
-import com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNote;
 import com.comsysto.livingdoc.annotation.plantuml.PlantUmlNotes;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.ClassDiagram;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.DiagramId;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.ExecutablePart;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.SequenceDiagram;
-import com.comsysto.livingdoc.annotation.processors.plantuml.model.TypePart;
 import com.comsysto.livingdoc.annotation.processors.plantuml.model.TypePart;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
@@ -65,7 +63,7 @@ import javax.tools.JavaFileObject;
                               "com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass",
                               "com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable.StartOfSequence"
                           })
-@SupportedOptions({KEY_SETTINGS_DIR, KEY_OUT_DIR, KEY_ENABLED})
+@SupportedOptions({ KEY_SETTINGS_DIR, KEY_OUT_DIR, KEY_ENABLED })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @Slf4j
 @PlantUmlClass(diagramIds = PlantUmlClassDiagramProcessor.DIAGRAM_ID)
@@ -111,21 +109,23 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
     private void processAnnotation(final TypeElement annotation, final RoundEnvironment roundEnv) {
         if (isEnabled()) {
             switch (annotation.getQualifiedName().toString()) {
-            case "com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass":
-            final Set<TypeElement> annotated = roundEnv.getElementsAnnotatedWith(annotation)
-                .stream()
-                .map(TypeElement.class::cast)
-                .collect(toSet());
+                case "com.comsysto.livingdoc.annotation.plantuml.PlantUmlClass":
+                    final Set<TypeElement> annotated = roundEnv.getElementsAnnotatedWith(annotation)
+                        .stream()
+                        .map(TypeElement.class::cast)
+                        .collect(toSet());
 
-                    processPlantumlClassAnnotation(annotatedTypes);
+                    processPlantumlClassAnnotation(annotated);
                     break;
 
                 case "com.comsysto.livingdoc.annotation.plantuml.PlantUmlExecutable.StartOfSequence":
-                final Set<ExecutableElement> annotatedExecutables = roundEnv.getElementsAnnotatedWith(annotation)
-                    .stream()
-                    .map(ExecutableElement.class::cast)
-                    .collect(toSet());
-                processPlantumlSequenceStartAnnotation(annotatedExecutables);
+                    final Set<ExecutableElement> annotatedExecutables = roundEnv.getElementsAnnotatedWith(annotation)
+                        .stream()
+                        .map(ExecutableElement.class::cast)
+                        .collect(toSet());
+
+                    processPlantumlSequenceStartAnnotation(annotatedExecutables);
+                    break;
 
                 default:
                     log.error(
@@ -134,8 +134,9 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
                         + "PlantUmlClassDiagramProcessor.processAnnotation.",
                         annotation.getQualifiedName().toString());
             }
+        } else {
+            log.info("PlantUML class diagram processing is disabled.");
         }
-        else log.info("PlantUML class diagram processing is disabled.");
     }
 
     /**
@@ -158,22 +159,26 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
     private void processPlantumlClassAnnotation(final Set<TypeElement> annotatedTypes) {
         final Map<DiagramId, List<TypePart>> generatedFiles = annotatedTypes.stream()
             .map(this::createDiagramPart)
-            .flatMap(part -> part.getDiagramIds().stream()
+            .flatMap(part -> getDiagramIds(part).stream()
                 .map(id -> new TypePart(
                     singleton(id),
                     part.getAnnotation(),
                     part.getTypeElement(),
                     part.getNotes())))
-            .collect(groupingBy(part -> part.getDiagramIds().stream().findFirst().get()));
+            .collect(groupingBy(part -> getDiagramIds(part).stream().findFirst().get()));
 
         generatedFiles.keySet().forEach(id -> createClassDiagram(id, generatedFiles.get(id)));
     }
 
+    private Set<DiagramId> getDiagramIds(final TypePart part) {
+        return union(part.getDiagramIds(), singleton(DiagramId.of("package")));
+    }
+
     private void createClassDiagram(final DiagramId diagramId, final List<TypePart> parts) {
-        final File outFile = getOutFile(diagramId);
+        final File outFile = getOutFile(diagramId, "class");
         final Properties settings = loadSettings(diagramId);
 
-        log.debug("Create PlantUML diagram: {}", outFile);
+        log.debug("Create PlantUML diagram: {}", outFile.getAbsolutePath());
 
         try (final BufferedWriter out = new BufferedWriter(new FileWriter(outFile))) {
             final Template template = freemarkerConfiguration.getTemplate("class-diagram.puml.ftl");
@@ -202,14 +207,6 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
             getNoteAnnotations(annotated));
     }
 
-    private List<PlantUmlNote> getNoteAnnotations(final TypeElement annotated) {
-        return Optional.ofNullable(annotated.getAnnotation(PlantUmlNotes.class))
-            .map(PlantUmlNotes::value)
-            .map(Arrays::asList)
-            .orElseGet(() -> Optional.ofNullable(annotated.getAnnotation(PlantUmlNote.class))
-                .map(Collections::singletonList)
-                .orElse(emptyList()));
-
     private void processPlantumlSequenceStartAnnotation(final Set<ExecutableElement> annotatedExecutables) {
         final Map<DiagramId, List<ExecutablePart>> generatedFiles = annotatedExecutables.stream()
             .map(this::createDiagramPart)
@@ -226,7 +223,7 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
 
     @SneakyThrows
     private void createSequenceDiagram(final DiagramId diagramId, final List<ExecutablePart> parts) {
-        final File outFile = getOutFile(diagramId);
+        final File outFile = getOutFile(diagramId, "sequence");
         final Properties settings = loadSettings(diagramId);
 
         log.debug("Create PlantUML diagram: {}", outFile.getAbsoluteFile());
@@ -269,8 +266,8 @@ public class PlantUmlClassDiagramProcessor extends AbstractProcessor {
                 .orElse(Collections.emptyList()));
     }
 
-    private File getOutFile(final DiagramId diagramId) {
-        final File diagramFile = new File(outDir, diagramId.getValue() + "_sequence.puml");
+    private File getOutFile(final DiagramId diagramId, final String type) {
+        final File diagramFile = new File(outDir, diagramId.getValue() + "_" + type + ".puml");
 
         //noinspection ResultOfMethodCallIgnored
         diagramFile.getParentFile().mkdirs();

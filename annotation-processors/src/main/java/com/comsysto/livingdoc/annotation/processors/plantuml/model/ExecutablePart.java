@@ -134,12 +134,16 @@ public class ExecutablePart {
         final List<ResolvedMethodDeclaration> outgoingCalls,
         final Optional<String> renderedNote)
     {
-        return String.format(
-            "activate %s\n%s%sdeactivate %s\n",
-            className,
-            renderedNote.orElse(""),
-            renderCalls(className, outgoingCalls),
-            className);
+        if (!outgoingCalls.isEmpty() || renderedNote.isPresent()) {
+            return String.format(
+                "activate %s\n%s%sdeactivate %s\n",
+                className,
+                renderedNote.orElse(""),
+                renderCalls(className, outgoingCalls),
+                className);
+        } else {
+            return "\n";
+        }
     }
 
     private String renderCalls(final String className, final List<ResolvedMethodDeclaration> outgoingCalls) {
