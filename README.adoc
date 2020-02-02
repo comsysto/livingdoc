@@ -13,7 +13,7 @@ ifndef::env-github[]
 :icons: font
 endif::[]
 
-= Living Diagrams
+= Living Diagrams with Java Annotations and PlantUML
 
 :toc:
 :toc-placement!:
