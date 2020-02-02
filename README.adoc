@@ -13,26 +13,66 @@ ifndef::env-github[]
 :icons: font
 endif::[]
 
-= Living Diagrams with Java Annotations and PlantUML
+= Living Diagrams with Java Annotations and PlantUML
 
 :toc:
 :toc-placement!:
 
 == Motivation
-Documentation is hard. Every programmer knows this. It's also boring and repetitive, and the result often looks ugly
-and is hard to read (because not all programmers are poets). The fact that written documentation is usually outdated
-before it has been finished doesn't make it any better.
+Documentation is hard - every programmer knows this to be a fact. It's also boring and repetitive, and the result often
+looks ugly and is hard to read (because not all programmers are poets). The fact that any written documentation is
+usually outdated before it has been finished doesn't make it any better.
                                                         
 Therefore, writing documentation it is usually something programmers try to avoid.
+
+[quote]
+The best documentation is the code itself.
 
 There is a simple truth you will often hear when talking to programmers about documentation: the most accurate
 documentation is the code itself. It's the only thing that won't become outdated, won't lie to you, and will always be
 complete.
 
-But code is difficult to understand. If you have ever tried to learn about a code base without written documentation,
-you'll know that it is very, very hard to glean anything useful from it.
+Indeed, well written code and tests can be very helpful for documenting the purpose of a system. Specifically, a
+system following the practices established by https://de.wikipedia.org/wiki/Clean_Code:[Clean Code] and
+https://de.wikipedia.org/wiki/Domain-driven_Design[Domain-driven Design] is - usually - much easier to understand than
+one that has been written without those concepts in mind. Some of these practices are:
+
+* well-named types, methods and fields, using a common language between developers and customers
+* code structured with readability as a goal
+* well-designed modules that each serve a specific concept or set of concepts
+
+Tests can also help in documenting how a system will behave, especially acceptance tests that are written using
+natural language or something close to it (e.g. https://cucumber.io/[Cucumber]).
+
+However, these (good) practices are only a part of the puzzle. Experience shows that sticking to these concepts is
+difficult - in fact, the notion often becomes purely academical when faced with the hard facts of time pressure and
+non-functional requirements (e.g. performance or security). Also, customers are often woefully ignorant of these issues
+and seldom offer the support required to develop a common understanding of the system.
+
+So, simply skipping documentation is an even worse option than the one of investing lots of effort in hard-to-read,
+outdated documentation artifacts. From our experience, we consider both to be non-viable.
+
+=== A new concept: Living Documentation
+'Living Documentation' is a term coined by Gojko Adzik in his book https://gojko.net/books/specification-by-example/?src=/resources.html[Specification by example].
+His work (that is mostly about BDD - Behavior Driven Development) gave inspiration to the work of Cyrille Martraire, a
+french software engineer who tries to take the approach to a new level in his book https://leanpub.com/livingdocumentation[Living Documentation].
+The core principles of Living Documentation are:
+
+* It is *reliable* - all documentation products are always accurate and in sync with the actual code
+* Producing and updating it is *low effort*
+* It is both a product and a medium of *collaboration* between all involved people
+* It is *insightful* for its consumers and sheds light on the important aspects of the system
+
+One of the crucial insights taken from Cyrille's book is that it *is* possible to produce a lot of helpful documentation
+artifacts by traversing the code using automated generators. The key difference to most existing tools that generate
+documentation (including diagrams) from code is that the tool chain is written in such a way that it permits
+the development team to adapt and enhance what comes out of it, producing results that both have real value and are
+still as close to the single source of truth (the code) as possible.
 
 === Living Diagrams
+
+In this blog post, we build on the concept of Living Documentation. We concentrate on a subset of its ideas:
+**Living Diagrams**. We'd like to generate UML Diagrams, specifically UML Class Diagrams, directly from the code.
 
 ==== History
 The idea to generate UML diagrams from source code isn't new. Actually, it has a long history in software development,
@@ -73,30 +113,28 @@ Since they can usually be made part of automated toolchains, it is often a lot e
 the parts of the documentation that live in close proximity to the code, for example JavaDocs. Despite these positive
 aspects, it's usually still very difficult to influence what the diagrams display, and how.
 
-==== A new concept: Living Documentation
-'Living Documentation' is a term coined by Gojko Adzik in his book https://gojko.net/books/specification-by-example/?src=/resources.html[Specification by example].
-His work (that is mostly about BDD - Behavior Driven Development) gave inspiration to the work of Cyrille Martraire, a
-french software engineer who tries to take the approach to a new level in his book https://leanpub.com/livingdocumentation[Living Documentation].
-The core principles of Living Documentation are:
+==== The Editorial Perspective: customizing output
+Let's revisit the concept of 'Living Documentation'. The fourth key concept is that any documentation should be
+*insightful* - in other words, it should provide real value to its consumer. To achieve that, documentation should be
+written from the *editorial perspective*:
 
-* It is *reliable* - all documentation products are always accurate and in sync with the actual code
-* Producing and updating it is *low effort*
-* It is both a product and a medium of *collaboration* between all involved people
-* It is *insightful* for its consumers and sheds light on the important aspects of the system
+[quote, Cyrille Martraire, Living Documentation]
 
-One of the crucial insights taken from Cyrille's book is that it *is* possible to produce a lot of helpful documentation
-artifacts by traversing the code using automated generators. One of the key difference to most existing tools that
-generate documentation (including diagrams) from code is that the tool chain is written in such a way that it permits
-the development team to adapt and enhance what comes out of it, producing results that both have real value and are
-still as close to the single source of truth (the code) as possible.
+The Editorial Perspective is based on the intent of the considered document. Of course this assumes that each document
+has a clearly identified purpose, for an identified audience, which should be the case.
 
-In this blog post, we build on this concept but concentrate on a subset of the ideas from Living Documentation:
-**Living Diagrams**. We'd like to generate UML Diagrams, namely UML Class Diagrams, directly from the code. So, let us
-intruce the PlantUML Class Diagram Generator.
+So, a diagram that is useful to its consumers should fulfill the following requirements:
+
+* It should show only the parts of the system that is relevant to the intended audience
+* It should be possible to annotate the diagram with information that is relevant for the intended audience
+* It should always be up to date
 
 == The PlantUML Class Diagram Generator
 
-The PlantUML Class Diagram Generator is a tool that produces PlantUML Class diagrams from Java source code.
+The PlantUML Class Diagram Generator is a tool that produces PlantUML Class diagrams from annotated Java source code.
+It produces nice-looking, ready-to use diagrams that are easy to include into existing documentation artifacts. In
+addition, developers have the possibility to heavily influence the output in order to produce diagrams with real
+value for its consumers.
 
 .What is PlantUML?
 ****
@@ -173,13 +211,14 @@ The directory where the annotation processor will write diagram files
 |``./out``
 
 |**pumlgen.enabled** +                                             
-This setting may be used to completely disable the processor at compilation time despite its presence on the classpath
+This setting may be used to completely disable the processor at compilation time despite its presence on the class path
 |``true``
 |===
 
 === Examples
-The test sources contain an artificial class hierarchy that models different types of vehicles and is used as a (quite
-simple) example. Please have a look at the diagram - it is auto-generated using the annotation processor:
+The link:annotation-processors/src/test/java/com/comsysto/livingdoc/example[test sources] contain an artificial class
+hierarchy that models different types of vehicles and is used as a (quite simple) example. Please have a look at the
+diagram - it is auto-generated using the annotation processor:
 
 ==== Example 1: The whole test classes hierarchy
 
@@ -312,7 +351,7 @@ link:https://docs.oracle.com/javase/8/docs/api/javax/annotation/processing/Abstr
 annotations used by the processor, however! Only the top-level annotations that should be delivered by the processing
 framework when it calls the ``process(..)`` method are required here - in our case, that's only the annotation
 ``@PlantUmlType``
-<3> Processors need to define the options they proccess - those put on the ``javac`` command line using the ``-A``
+<3> Processors need to define the options they process - those put on the ``javac`` command line using the ``-A``
 parameter
 <4> Processors need to define the Java source version they understand
 <5> The current version of the processor has been tested with Java 8
@@ -329,7 +368,8 @@ com.comsysto.livingdoc.annotation.processors.plantuml.PlantUmlClassDiagramProces
 This file, containing only the fully qualified class name of the processor, causes it to be registered with the
 annotation processing environment.
 
-TIP: Alternatively, https://github.com/google/auto/tree/master/service:[Google Autoservice] may be used to autogenerate this file.
+TIP: Alternatively, https://github.com/google/auto/tree/master/service:[Google Autoservice] may be used to auto-generate
+this file.
 
 === Data Model
 
