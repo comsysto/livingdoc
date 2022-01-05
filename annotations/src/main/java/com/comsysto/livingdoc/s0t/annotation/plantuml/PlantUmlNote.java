@@ -27,5 +27,27 @@ public @interface PlantUmlNote {
      */
     Position position() default Position.TOP;
 
+    /**
+     * Max line length of the note.
+     *
+     * @return the maximum number of characters in a line.
+     */
+    int maxLineLength() default 30;
+
+    /**
+     * A flag indicating if long words shall be wrapped if they exceed
+     * maxLineLength.
+     *
+     * @return true if long words should be wrapped.
+     */
+    boolean wrapLongwords() default true;
+
+    /**
+     * A regular expression used to specify characters where line breaks may be
+     * inserted.
+     *
+     * @return a regular expression.
+     */
+    String wrapOn() default "";
 }
 

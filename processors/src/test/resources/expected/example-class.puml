@@ -8,8 +8,9 @@ title Example class diagram
     }
 
 note bottom of Airplane
-This models an airplane, a //flying//
-vehicle that is **very** fast.
+This models an airplane, a
+//flying// vehicle that is
+**very** fast.
 end note
 
     class Car
@@ -23,11 +24,12 @@ end note
     }
 
 note top of GroundVehicle
-A vehicle that drives on the ground
+A vehicle that drives on the
+ground
 end note
 note right of GroundVehicle
-Multiple notes may be
-attached to a type
+Multiple notes may be attached
+to a type
 end note
 
     class Train {
@@ -42,7 +44,9 @@ end note
     }
 
 note top of TransportType
-Indicates whether a vehicle transports passengers or cargo.
+Indicates whether a vehicle
+transports passengers or
+cargo.
 end note
 
     class Vehicle {

@@ -37,6 +37,7 @@
         <snakeyaml.version>1.27</snakeyaml.version>
         <junit-platform.version>1.8.1</junit-platform.version>
         <tools.version>0.16.0</tools.version>
+        <commons-text.version>1.9</commons-text.version>
     </properties>
 
     <dependencies>
@@ -83,6 +84,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-configuration2</artifactId>
                 <version>${commons-configuration2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${commons-text.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.yaml</groupId>
