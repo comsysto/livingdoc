@@ -1,0 +1,25 @@
+@startuml
+!include ./format.iuml
+title Example sequence diagram
+
+        participant Flight
+
+        activate Flight
+        Flight -> Airport: load(com.comsysto.livingdoc.s0t.example.Airplane)
+            activate Airport
+        Airport -> Airplane: load()
+            deactivate Airport
+        Flight -> Airplane: launch()
+            activate Airplane
+        Airplane -> FlyingVehicle: launch()
+        Airplane -> Airplane: retractWheels()
+            deactivate Airplane
+        Flight -> FlyingVehicle: fly()
+        Flight -> Airplane: land()
+            activate Airplane
+        Airplane -> Airplane: lowerWheels()
+        Airplane -> FlyingVehicle: land()
+            deactivate Airplane
+        deactivate Flight
+
+@enduml

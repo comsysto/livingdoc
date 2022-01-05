@@ -1,0 +1,4 @@
+s0t:
+    freemarker:
+        template:
+            root: ../resources
