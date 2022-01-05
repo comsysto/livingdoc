@@ -75,8 +75,8 @@ class S0tProcessor : AbstractProcessor() {
                 .forEach { model.addType(it) }
 
             PlantUmlExecutable.StartOfSequence::class.qualifiedName -> annotatedElements(annotation)
-                    .map { it as ExecutableElement }
-                    .forEach { model.addExecutable(ExecutableModel.of(it)) }
+                .mapNotNull { ExecutableModel.of(it as ExecutableElement) }
+                .forEach { model.addExecutable(it) }
 
             else -> log.error(
                 """Unexpected annotation type: {}. Most likely there is a mismatch between the value of 
