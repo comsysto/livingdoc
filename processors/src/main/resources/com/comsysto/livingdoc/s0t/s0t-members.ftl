@@ -4,12 +4,14 @@
 </#macro>
 
 <#macro renderModifier modifier><#rt>
+    <#compress>
     <#if modifier.name()="PUBLIC">+ <#lt><#rt>
     <#elseif modifier.name()="PROTECTED"># <#lt><#rt>
     <#elseif modifier.name()="PACKAGE">~ <#lt><#rt>
     <#elseif modifier.name()="PRIVATE">- <#lt><#rt>
     <#else><#lt><#rt>
     </#if><#lt><#rt>
+    </#compress>
 </#macro>
 
 <#macro renderTypeParameters params><#rt>

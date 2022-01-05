@@ -1,14 +1,10 @@
 package com.comsysto.livingdoc.s0t.model
 
-import com.comsysto.livingdoc.s0t.asTypeElement
 import com.comsysto.livingdoc.s0t.model.Relation.*
 import com.comsysto.livingdoc.s0t.typeName
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
-import javax.lang.model.type.DeclaredType
-import javax.lang.model.type.TypeMirror
-import kotlin.reflect.KClass
 
 /**
  * Models a language type.
@@ -20,7 +16,7 @@ data class TypeModel(
     val realizations: List<Realization> = listOf(),
     val inheritance: Inheritance? = null,
     val associations: List<Association> = listOf(),
-    val notes: List<Note> = listOf()
+    val notes: List<NoteModel> = listOf()
 ) {
     enum class Type {
         INTERFACE, ABSTRACT, CLASS, ENUM;
@@ -50,6 +46,6 @@ data class TypeModel(
                 Realization.allOf(typeElement),
                 Inheritance.of(typeElement),
                 Association.allOf(typeElement),
-                Note.allOf(typeElement))
+                NoteModel.allOf(typeElement))
     }
 }

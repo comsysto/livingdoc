@@ -118,7 +118,7 @@ object S0tModelTestObjectMother {
 
     fun mockPlantUmlNote(body: String, position: Position): PlantUmlNote {
         val plantUmlNote = mockk<PlantUmlNote>()
-        every { plantUmlNote.body } returns body
+        every { plantUmlNote.value } returns body
         every { plantUmlNote.position } returns com.comsysto.livingdoc.s0t.annotation.plantuml.Position.valueOf(position.name)
         return plantUmlNote
     }

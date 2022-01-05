@@ -3,46 +3,63 @@
 hide empty members
 title Example class diagram
 
-class Airplane {
-    # Tuple<Wing, Wing> wings
-}
-    
-class Car    
-interface Flying    
-class FlyingVehicle    
-abstract class GroundVehicle {
-    - int numberOfWheels
-}
+    class Airplane {
+    #Tuple<Wing, Wing> wings
+    }
+
+note bottom of Airplane
+This models an airplane, a //flying//
+vehicle that is **very** fast.
+end note
+
+    class Car
+
+    interface Flying
+
+    class FlyingVehicle
+
+    abstract class GroundVehicle {
+    -int numberOfWheels
+    }
 
 note top of GroundVehicle
 A vehicle that drives on the ground
 end note
-
 note right of GroundVehicle
 Multiple notes may be
 attached to a type
 end note
 
-class Train {
-    + List<Car> loadedCars
-}
+    class Train {
+    +List<Car> loadedCars
+    }
 
-enum TransportType {
-    PASSENGERS
-    CARGO
-    ~ String description
-}
 
-class Vehicle {
-    + TransportType transportType
-}
+    enum TransportType {
+        PASSENGERS
+        CARGO
+    ~String description
+    }
 
-class Wing
+note top of TransportType
+Indicates whether a vehicle transports passengers or cargo.
+end note
+
+    class Vehicle {
+    +TransportType transportType
+    }
+
+
+    class Wing
+
+
 
 FlyingVehicle <|-- Airplane
 Airplane *--> "2" Wing
 
 GroundVehicle <|-- Car
+
+
 
 Flying <|.. FlyingVehicle
 Vehicle <|-- FlyingVehicle
@@ -52,6 +69,10 @@ Vehicle <|-- GroundVehicle
 GroundVehicle <|-- Train
 Train --> "0..*" Car
 
+
+
 Vehicle --> TransportType
+
+
 
 @enduml

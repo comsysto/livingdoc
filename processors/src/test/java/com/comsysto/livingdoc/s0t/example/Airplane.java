@@ -13,7 +13,7 @@ import com.comsysto.livingdoc.s0t.model.Relation.Association;
 
 @PlantUmlClass
 @PlantUmlNote(
-    body = "This models an airplane, a //flying// \nvehicle that is **very** fast.",
+    value = "This models an airplane, a //flying// \nvehicle that is **very** fast.",
     position = BOTTOM)
 public class Airplane extends FlyingVehicle {
 
@@ -22,7 +22,7 @@ public class Airplane extends FlyingVehicle {
 
     @Override
     @PlantUmlExecutable
-    @PlantUmlNote(position = RIGHT, body = "Directly after launch, the\nplane needs to **retract** its wheels.")
+    @PlantUmlNote(position = RIGHT, value = "Directly after launch, the\nplane needs to **retract** its wheels.")
     public void launch() {
         super.launch();
         retractWheels();

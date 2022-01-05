@@ -20,7 +20,7 @@ public @interface PlantUmlNote {
      * <a href="http://plantuml.com/creole">Creole</a>, the markup language used
      * by PlantUML.
      */
-    String body() default "";
+    String value() default "";
 
     /**
      * The note's position in relation to the rendered type.

@@ -21,19 +21,19 @@
     ${typeDeclaration} ${type.name.simpleName}<#assign fields=type.fields><#if fields?has_content> {
     <#list fields as field>
         <#if type.type == "ENUM" && field.type.name = type.name>
-            ${field.name}
+        ${field.name}
         <#else>
-            <@Members.renderField field/>
+        <@Members.renderField field/>
         </#if>
     </#list>
     }
 </#if>
 
-    <#list type.notes as note>
-        note ${note.position?lower_case} of ${type.name.simpleName}
-        ${note.text}
-        end note
+<#list type.notes as note>
+note ${note.position?lower_case} of ${type.name.simpleName}
+<#compress>${note.text}</#compress>
+end note
+</#list>
 
-    </#list>
 </#macro>
 

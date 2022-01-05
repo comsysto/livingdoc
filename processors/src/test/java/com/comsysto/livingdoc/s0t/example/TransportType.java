@@ -4,7 +4,7 @@ import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlClass;
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlNote;
 
 @PlantUmlClass
-@PlantUmlNote(body = "Indicates whether a vehicle transports passengers or cargo.")
+@PlantUmlNote("Indicates whether a vehicle transports passengers or cargo.")
 public enum TransportType {
     PASSENGERS("Persons are passengers."),
     CARGO("Bags are cargo.");
