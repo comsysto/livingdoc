@@ -36,6 +36,10 @@ end note
     +List<Car> loadedCars
     }
 
+note top of Train
+Models a train. A train may
+carry a cargo of cars.
+end note
 
     enum TransportType {
         PASSENGERS

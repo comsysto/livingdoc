@@ -18,7 +18,8 @@ public @interface PlantUmlNote {
     /**
      * The note body. The body may be formatted using
      * <a href="http://plantuml.com/creole">Creole</a>, the markup language used
-     * by PlantUML.
+     * by PlantUML. If no body is specified, the processor will try to generate
+     * it from the first few sentences of the JavaDoc comment if available.
      */
     String value() default "";
 
@@ -33,6 +34,14 @@ public @interface PlantUmlNote {
      * @return the maximum number of characters in a line.
      */
     int maxLineLength() default 30;
+
+    /**
+     * The maximum length of note body if it's auto-generated from the element's
+     * JavaDoc comment.
+     *
+     * @return the max length.
+     */
+    int maxLengthFromJavaDoc() default 80;
 
     /**
      * A flag indicating if long words shall be wrapped if they exceed
