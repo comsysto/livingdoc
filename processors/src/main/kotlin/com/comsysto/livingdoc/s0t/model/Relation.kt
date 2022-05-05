@@ -1,13 +1,12 @@
 package com.comsysto.livingdoc.s0t.model
 
+import com.comsysto.livingdoc.s0t.*
 import com.comsysto.livingdoc.s0t.S0tProcessor.Companion.configuration
 import com.comsysto.livingdoc.s0t.annotation.plantuml.AutoCreateType
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlClass
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlField
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlField.AssociationType
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlField.AssociationType.STANDARD
-import com.comsysto.livingdoc.s0t.asDeclaredType
-import com.comsysto.livingdoc.s0t.asTypeElement
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
@@ -23,11 +22,28 @@ private const val DEF_AUTO_ADD_ASSOCIATIONS = true
  */
 interface Relation {
 
+    /**
+     * The 'left' side of the relation. In case if Realization and Inheritance,
+     * this is the parent type. In case of an Association, this is the type
+     * owning the respective field declaration.
+     */
     val left: TypeRef
+
+    /**
+     * The 'right' side of the relation. In case if Realization and Inheritance,
+     * this is the child type. In case of an Association, this is the referenced
+     * type.
+     */
     val right: TypeRef
 
     abstract class BaseRelation(val id: RelationId) : Relation
 
+    /**
+     * A Realization models an interface being implemented by a concrete type.
+     *
+     * @param interfaceType the implemented interface type.
+     * @param implementingType the concrete type implementing the interface.
+     */
     data class Realization(val interfaceType: TypeRef, val implementingType: TypeRef) : BaseRelation(RelationId(interfaceType.name.asQualifiedName())) {
         override val left: TypeRef
             get() = interfaceType
@@ -37,13 +53,13 @@ interface Relation {
         companion object {
 
             /**
-             * Get all realizations from an annotation API TypeElement.
+             * Get all interfaces implemented by a type element.
              */
             fun allOf(typeElement: TypeElement): List<Realization> = typeElement.interfaces
-                    .filterIsInstance<DeclaredType>()
-                    .mapNotNull { it.asTypeElement() }
-                    .filter { it.getAnnotation(PlantUmlClass::class.java) != null }
-                    .map { interfaceElement -> Realization(TypeRef.of(interfaceElement), TypeRef.of(typeElement)) }
+                .filterIsInstance<DeclaredType>()
+                .mapNotNull { it.asTypeElement() }
+                .filter { isPartOfDiagram(it) }
+                .map { interfaceElement -> Realization(interfaceType = TypeRef.of(interfaceElement), implementingType = TypeRef.of(typeElement)) }
         }
     }
 
@@ -56,12 +72,13 @@ interface Relation {
         companion object {
 
             /**
-             * Get the super class from an annotation API TypeElement.
+             * Get the super class of a type element if it is present on the
+             * diagram.
              */
             fun of(typeElement: TypeElement): Inheritance? = typeElement.superclass
                 .asTypeElement()?.let {
-                    if (it.qualifiedName.toString() != "java.lang.Object" && it.getAnnotation(PlantUmlClass::class.java) != null)
-                        Inheritance(TypeRef.of(it), TypeRef.of(typeElement))
+                    if (isPartOfDiagram(it))
+                        Inheritance(superClassType = TypeRef.of(it), implementingType = TypeRef.of(typeElement))
                     else null
                 }
         }
@@ -88,36 +105,38 @@ interface Relation {
              * TypeElement.
              */
             internal fun allOf(typeElement: TypeElement): List<Association> {
-                val autoCreate = autoCreateAssociations(typeElement)
-
                 return typeElement.enclosedElements
                     .filterIsInstance(VariableElement::class.java)
-                    .filter { it.asType().asTypeElement()?.kind != ElementKind.ENUM || !it.asType().equals(typeElement.asType()) }
-                    .filter { (autoCreate || fieldAnnotation(it) != null && fieldAnnotation(it)?.showAssociation == DEF_AUTO_ADD_ASSOCIATIONS) }
+                    .filter { !isSelfReference(it, typeElement) }
+                    .filter { (fieldAnnotation(it)?.showAssociation == true || shouldAutoCreateAssociations(typeElement)) }
                     .flatMap { allOf(it, typeElement) }
             }
 
-            private fun autoCreateAssociations(typeElement: TypeElement): Boolean {
+            private fun shouldAutoCreateAssociations(typeElement: TypeElement): Boolean {
                 val autoCreateAssociations = typeElement.getAnnotation(PlantUmlClass::class.java)?.autoCreateAssociations ?: AutoCreateType.DEFAULT
                 return (autoCreateAssociations == AutoCreateType.YES
                         || autoCreateAssociations == AutoCreateType.DEFAULT && configuration().getBoolean(KEY_AUTO_ADD_ASSOCIATIONS, DEF_AUTO_ADD_ASSOCIATIONS))
             }
 
-            internal fun allOf(v: VariableElement, enclosingTypeElement: TypeElement) =
-                if (targetsContainerType(v)) { containerTypeAssociations(enclosingTypeElement, v) }
-                else standardTypeAssociation(enclosingTypeElement, v)
+            private fun isSelfReference(it: VariableElement, typeElement: TypeElement) = it.asType().equals(typeElement.asType())
 
-            private fun targetsContainerType(v: VariableElement) =
-                (v.asType().asDeclaredType()?.typeArguments ?: emptyList()).isNotEmpty() && !(fieldAnnotation(v)?.forceStandardTypeAssociation ?: false)
+            internal fun allOf(v: VariableElement, enclosingTypeElement: TypeElement) =
+                if (targetsContainerType(v)) {
+                    containerTypeAssociations(enclosingTypeElement, v)
+                } else standardTypeAssociation(enclosingTypeElement, v)
+
+            private fun targetsContainerType(v: VariableElement) = v.asType().typeArguments().isNotEmpty() && !forceStandardTypeAssociation(v)
+
+            private fun forceStandardTypeAssociation(v: VariableElement) = fieldAnnotation(v)?.forceStandardTypeAssociation ?: false
 
             /**
              * Determines if the specified type is a container type (e.g. a
              * collection or optional type) and returns associations to all its
              * type parameters.
              */
-            private fun containerTypeAssociations(sourceTypeElement: TypeElement, v: VariableElement): List<Association> =
+            private fun containerTypeAssociations(enclosingTypeElement: TypeElement, v: VariableElement): List<Association> =
                 v.asType().asDeclaredType()
-                    ?.let { targetTypes(it)?.map { t -> typeAssociation(sourceTypeElement, t, v, fieldAnnotation(v)) } }
+                    ?.let { targetTypes(it)?.map { t -> typeAssociation(from = enclosingTypeElement, to = t, v) } }
                     ?: emptyList()
 
             /**
@@ -125,31 +144,33 @@ interface Relation {
              */
             internal fun targetTypes(type: DeclaredType): Set<TypeRef>? = if (type.typeArguments.isNotEmpty()) {
                 type.typeArguments.toSet()
-                    .filter { it.asTypeElement()?.getAnnotation(PlantUmlClass::class.java) != null }
+                    .filter { isPartOfDiagram(it) }
                     .filterIsInstance<DeclaredType>()
                     .map { TypeRef.of(it) }
                     .toSet()
-            }
-            else null
+            } else null
 
             /**
-             * Returns a standard type association for a non-container type.
+             * Returns a standard type association (for a non-container field type).
              */
-            private fun standardTypeAssociation(sourceType: TypeElement, v: VariableElement) =
-                if (v.asType().asTypeElement()?.getAnnotation(PlantUmlClass::class.java) != null)
-                    listOfNotNull(typeAssociation(sourceType, TypeRef.of(v.asType()), v, fieldAnnotation(v)))
+            private fun standardTypeAssociation(enclosingType: TypeElement, v: VariableElement) =
+                if (isPartOfDiagram(v.asType())) listOfNotNull(typeAssociation(from = enclosingType, to = TypeRef.of(v.asType()), v))
                 else emptyList()
 
-            private fun fieldAnnotation(it: VariableElement): PlantUmlField? = it.getAnnotation(PlantUmlField::class.java)
+            private fun typeAssociation(from: TypeElement, to: TypeRef, v: VariableElement): Association {
+                val a = fieldAnnotation(v)
 
-            private fun typeAssociation(sourceType: TypeElement, targetType: TypeRef, v: VariableElement, fieldAnnotation: PlantUmlField?) = Association(
-                TypeRef.of(sourceType),
-                targetType,
-                FieldModel.of(v),
-                fieldAnnotation?.sourceCardinality ?: "",
-                fieldAnnotation?.targetCardinality ?: "",
-                fieldAnnotation?.associationType ?: STANDARD
-            )
+                return Association(
+                    TypeRef.of(from),
+                    to,
+                    FieldModel.of(v),
+                    a?.sourceCardinality ?: "",
+                    a?.targetCardinality ?: "",
+                    a?.associationType ?: STANDARD
+                )
+            }
+
+            private fun fieldAnnotation(v: VariableElement): PlantUmlField? = v.getAnnotation(PlantUmlField::class.java)
         }
     }
 }

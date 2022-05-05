@@ -18,7 +18,7 @@ import javax.lang.model.element.TypeElement
 /**
  * The S0T annotation processor.
  */
-    @SupportedAnnotationTypes(
+@SupportedAnnotationTypes(
     "com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlClass",
     "com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlExecutable.StartOfSequence"
 )

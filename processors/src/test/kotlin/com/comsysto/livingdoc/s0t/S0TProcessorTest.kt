@@ -4,6 +4,7 @@ import com.google.testing.compile.Compilation
 import com.google.testing.compile.Compiler.javac
 import com.google.testing.compile.JavaFileObjects
 import io.kotlintest.matchers.collections.shouldContainExactly
+import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotlintest.matchers.file.exist
 import io.kotlintest.should
 import io.kotlintest.shouldBe
@@ -39,11 +40,11 @@ internal class S0TProcessorTest : BehaviorSpec({
 
             And("the class diagram file exists") { classDiagramFile should exist() }
             And("the class diagram contains the expected content") {
-                nonEmptyLinesTrimmed(classDiagramFile) shouldContainExactly nonEmptyLinesTrimmed(File(testClassLoaderRoot(), "/expected/example-class.puml"))
+                nonEmptyLinesTrimmed(classDiagramFile) shouldContainExactlyInAnyOrder nonEmptyLinesTrimmed(File(testClassLoaderRoot(), "/expected/expected-class.puml"))
             }
             And("the sequence diagram file exists") { sequenceDiagramFile should exist() }
             And("the sequence diagram contains the expected content") {
-                nonEmptyLinesTrimmed(sequenceDiagramFile) shouldContainExactly nonEmptyLinesTrimmed(File(testClassLoaderRoot(), "/expected/example-sequence.puml"))
+                nonEmptyLinesTrimmed(sequenceDiagramFile) shouldContainExactlyInAnyOrder nonEmptyLinesTrimmed(File(testClassLoaderRoot(), "/expected/expected-sequence.puml"))
             }
         }
     }

@@ -62,19 +62,13 @@ internal class RelationTest : BehaviorSpec({
         }
 
         When("I get the target types for a declared type") {
-            val containerType = typeElement(
-                "my.package.MyContainerType",
-                ElementKind.CLASS,
-                listOf(typeElement("1"), typeElement("2"), typeElement("1")).map { it.asType() as DeclaredType }
-            )
+            val containerType = typeElement("my.package.MyContainerType", ElementKind.CLASS, listOf(typeElement("1"), typeElement("2"), typeElement("1"))
+                .map { it.asType() as DeclaredType })
 
             val result = Association.targetTypes(containerType.asType() as DeclaredType)
 
             Then("it should return a set containing every distinct type") {
-                result shouldBe setOf(TypeRef.of(typeElement("1", elementKind = ElementKind.CLASS)), TypeRef.of(typeElement(
-                    "2",
-                    elementKind = ElementKind.CLASS
-                )))
+                result shouldBe setOf(TypeRef.of(typeElement("1")), TypeRef.of(typeElement("2")))
             }
         }
 

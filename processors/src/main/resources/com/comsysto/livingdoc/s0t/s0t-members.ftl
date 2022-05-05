@@ -21,3 +21,6 @@
     </#if><#lt><#rt>
 </#macro>
 
+<#macro renderEnumConstant field>
+    ${field.name}
+</#macro>
