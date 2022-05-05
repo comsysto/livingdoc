@@ -4,7 +4,6 @@ import com.google.testing.compile.Compilation
 import com.google.testing.compile.Compiler.javac
 import com.google.testing.compile.JavaFileObjects
 import io.kotlintest.matchers.collections.shouldContainExactly
-import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotlintest.matchers.file.exist
 import io.kotlintest.should
 import io.kotlintest.shouldBe
@@ -34,17 +33,27 @@ internal class S0TProcessorTest : BehaviorSpec({
                     .withOptions(options)
                     .compile(files.map { javaFileObject(it) })
             val classDiagramFile = File(System.getProperty(KEY_OUT_DIR, DEF_OUT_DIR), "${packagePath}/example-class.puml")
+            val groundVehiclesClassDiagramFile = File(System.getProperty(KEY_OUT_DIR, DEF_OUT_DIR), "${packagePath}/ground-vehicles-class.puml")
             val sequenceDiagramFile = File(System.getProperty(KEY_OUT_DIR, DEF_OUT_DIR), "${packagePath}/example-sequence.puml")
 
             Then("the processing status should be SUCCESS") { result.status() shouldBe Compilation.Status.SUCCESS }
 
-            And("the class diagram file exists") { classDiagramFile should exist() }
-            And("the class diagram contains the expected content") {
-                nonEmptyLinesTrimmed(classDiagramFile) shouldContainExactlyInAnyOrder nonEmptyLinesTrimmed(File(testClassLoaderRoot(), "/expected/expected-class.puml"))
+            // Check the general class diagram:
+            And("the general class diagram file exists") { classDiagramFile should exist() }
+            And("the general class diagram contains the expected content") {
+                nonEmptyLinesTrimmed(classDiagramFile) shouldContainExactly nonEmptyLinesTrimmed(File(testClassLoaderRoot(), "/expected/expected-example-class.puml"))
             }
+
+            // Check the ground vehicles class diagram:
+            And("the  ground vehicles class diagram file exists") { classDiagramFile should exist() }
+            And("the  ground vehicles class diagram contains the expected content") {
+                nonEmptyLinesTrimmed(groundVehiclesClassDiagramFile) shouldContainExactly nonEmptyLinesTrimmed(File(testClassLoaderRoot(), "/expected/expected-ground-vehicles-class.puml"))
+            }
+
+            // Check the generated sequence diagram:
             And("the sequence diagram file exists") { sequenceDiagramFile should exist() }
             And("the sequence diagram contains the expected content") {
-                nonEmptyLinesTrimmed(sequenceDiagramFile) shouldContainExactlyInAnyOrder nonEmptyLinesTrimmed(File(testClassLoaderRoot(), "/expected/expected-sequence.puml"))
+                nonEmptyLinesTrimmed(sequenceDiagramFile) shouldContainExactly nonEmptyLinesTrimmed(File(testClassLoaderRoot(), "/expected/expected-example-sequence.puml"))
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.comsysto.livingdoc.s0t.model
 
+import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlClass
 import com.comsysto.livingdoc.s0t.model.Relation.*
 import com.comsysto.livingdoc.s0t.typeName
 import javax.lang.model.element.ElementKind
@@ -16,7 +17,8 @@ data class TypeModel(
     val realizations: List<Realization> = listOf(),
     val inheritance: Inheritance? = null,
     val associations: List<Association> = listOf(),
-    val notes: List<NoteModel> = listOf()
+    val notes: List<NoteModel> = listOf(),
+    val diagramIds: Set<String> = setOf()
 ) {
     enum class Type {
         INTERFACE, ABSTRACT, CLASS, ENUM;
@@ -40,12 +42,13 @@ data class TypeModel(
          * @return the type model.
          */
         fun of(typeElement: TypeElement) = TypeModel(
-                typeElement.typeName() as TypeName.ComplexTypeName,
-                Type.of(typeElement),
-                FieldModel.allOf(typeElement),
-                Realization.allOf(typeElement),
-                Inheritance.of(typeElement),
-                Association.allOf(typeElement),
-                NoteModel.allOf(typeElement))
+            typeElement.typeName() as TypeName.ComplexTypeName,
+            Type.of(typeElement),
+            FieldModel.allOf(typeElement),
+            Realization.allOf(typeElement),
+            Inheritance.of(typeElement),
+            Association.allOf(typeElement),
+            NoteModel.allOf(typeElement),
+            typeElement.getAnnotation(PlantUmlClass::class.java).let { it.diagramIds.toSet() })
     }
 }

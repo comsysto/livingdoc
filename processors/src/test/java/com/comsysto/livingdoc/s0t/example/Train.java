@@ -12,7 +12,7 @@ import java.util.List;
  * superfluous JavaDoc comment serves as a test for the note auto-generation
  * capability.
  */
-@PlantUmlClass(diagramIds = { "package", "ground-vehicles" })
+@PlantUmlClass(diagramIds = "ground-vehicles")
 @PlantUmlNote
 public class Train extends GroundVehicle {
 
