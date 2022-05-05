@@ -24,7 +24,23 @@ import javax.tools.StandardLocation
 /**
  * Models a sequence of executable members in a tree-like structure.
  */
-data class ExecutableModel(val name: ExecutableName, val outgoingCalls: List<ExecutableModel>, val signature: String? = null) {
+data class ExecutableModel(
+
+    /**
+     * The name of the executable.
+     */
+    val name: ExecutableName,
+
+    /**
+     * The outgoing calls from this executable's body.
+     */
+    val outgoingCalls: List<ExecutableModel>,
+
+    /**
+     * The executables signature including parameters.
+     */
+    val signature: String? = null,
+) {
 
     companion object {
         private val log = LoggerFactory.getLogger(ExecutableModel::class.java.name)
@@ -32,7 +48,7 @@ data class ExecutableModel(val name: ExecutableName, val outgoingCalls: List<Exe
         /**
          * Creates an instance from an ExecutableElement. This is usually only
          * used for the start of a sequence (annotated with @StartOfSequence),
-         * as all other models are created from _JavaParser_ output. 
+         * as all other models are created from _JavaParser_ output.
          */
         fun of(element: ExecutableElement): ExecutableModel? {
             val enclosingType = TypeRef.of(element.enclosingElement.asType())

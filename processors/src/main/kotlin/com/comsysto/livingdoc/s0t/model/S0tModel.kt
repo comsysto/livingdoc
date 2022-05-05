@@ -19,4 +19,11 @@ class S0tModel {
     fun addExecutable(executable: ExecutableModel) {
         executables[executable.name] = executable
     }
+
+    fun typesForDiagram(diagramId: String?) = if (diagramId != null) {
+        types.entries
+            .filter { it.value.diagramIds.contains(diagramId) }
+            .associate { Pair(it.key, it.value) }
+    }
+    else types
 }
