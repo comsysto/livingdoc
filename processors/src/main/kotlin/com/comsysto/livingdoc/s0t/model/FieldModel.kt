@@ -4,7 +4,7 @@ import com.comsysto.livingdoc.s0t.S0tProcessor.Companion.configuration
 import com.comsysto.livingdoc.s0t.annotation.plantuml.AutoCreateType
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlClass
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlField
-import com.comsysto.livingdoc.s0t.asDeclaredType
+import com.comsysto.livingdoc.s0t.apextensions.asDeclaredType
 import com.comsysto.livingdoc.s0t.model.AccessModifier.*
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement

@@ -33,7 +33,7 @@ internal class S0TProcessorTest : BehaviorSpec({
                     .withOptions(options)
                     .compile(files.map { javaFileObject(it) })
             val classDiagramFile = File(System.getProperty(KEY_OUT_DIR, DEF_OUT_DIR), "${packagePath}/example-class.puml")
-            val groundVehiclesClassDiagramFile = File(System.getProperty(KEY_OUT_DIR, DEF_OUT_DIR), "${packagePath}/ground-vehicles-class.puml")
+            val airportClassDiagramFile = File(System.getProperty(KEY_OUT_DIR, DEF_OUT_DIR), "${packagePath}/airport-class.puml")
             val sequenceDiagramFile = File(System.getProperty(KEY_OUT_DIR, DEF_OUT_DIR), "${packagePath}/example-sequence.puml")
 
             Then("the processing status should be SUCCESS") { result.status() shouldBe Compilation.Status.SUCCESS }
@@ -45,9 +45,9 @@ internal class S0TProcessorTest : BehaviorSpec({
             }
 
             // Check the ground vehicles class diagram:
-            And("the  ground vehicles class diagram file exists") { classDiagramFile should exist() }
-            And("the  ground vehicles class diagram contains the expected content") {
-                nonEmptyLinesTrimmed(groundVehiclesClassDiagramFile) shouldContainExactly nonEmptyLinesTrimmed(File(testClassLoaderRoot(), "/expected/expected-ground-vehicles-class.puml"))
+            And("the airport class diagram file exists") { classDiagramFile should exist() }
+            And("the airport class diagram contains the expected content") {
+                nonEmptyLinesTrimmed(airportClassDiagramFile) shouldContainExactly nonEmptyLinesTrimmed(File(testClassLoaderRoot(), "/expected/expected-airport-class.puml"))
             }
 
             // Check the generated sequence diagram:

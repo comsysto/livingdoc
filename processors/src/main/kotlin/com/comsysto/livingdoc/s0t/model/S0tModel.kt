@@ -20,10 +20,8 @@ class S0tModel {
         executables[executable.name] = executable
     }
 
-    fun typesForDiagram(diagramId: String?) = if (diagramId != null) {
-        types.entries
-            .filter { it.value.diagramIds.contains(diagramId) }
-            .associate { Pair(it.key, it.value) }
-    }
-    else types
+    fun typesForDiagram(diagramId: String?) = (
+            if (diagramId != null) types.entries.filter { it.value.diagramIds.contains(diagramId) }
+            else types.entries.filter { !it.value.diagramIds.contains("!default") })
+        .associate { Pair(it.key, it.value) }
 }

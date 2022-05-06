@@ -1,8 +1,11 @@
 package com.comsysto.livingdoc.s0t.model
 
+import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlDependency
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlField
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlField.AssociationType
-import com.comsysto.livingdoc.s0t.model.Relation.*
+import com.comsysto.livingdoc.s0t.example.Airport
+import com.comsysto.livingdoc.s0t.example.Flight
+import com.comsysto.livingdoc.s0t.example.FlyingVehicle
 import com.comsysto.livingdoc.s0t.model.S0tModelTestObjectMother.annotatedClassTypeElement
 import com.comsysto.livingdoc.s0t.model.S0tModelTestObjectMother.fieldTypeElement
 import com.comsysto.livingdoc.s0t.model.S0tModelTestObjectMother.interfaceTypeElement
@@ -10,12 +13,17 @@ import com.comsysto.livingdoc.s0t.model.S0tModelTestObjectMother.plantUmlFieldAn
 import com.comsysto.livingdoc.s0t.model.S0tModelTestObjectMother.superClassTypeElement
 import com.comsysto.livingdoc.s0t.model.S0tModelTestObjectMother.typeElement
 import com.comsysto.livingdoc.s0t.model.S0tModelTestObjectMother.variableElement
+import com.comsysto.livingdoc.s0t.model.relations.Association
+import com.comsysto.livingdoc.s0t.model.relations.Dependency
+import com.comsysto.livingdoc.s0t.model.relations.Inheritance
+import com.comsysto.livingdoc.s0t.model.relations.Realization
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.BehaviorSpec
 import io.mockk.every
 import io.mockk.mockk
 import javax.lang.model.element.ElementKind
 import javax.lang.model.type.DeclaredType
+import javax.lang.model.type.MirroredTypeException
 
 internal class RelationTest : BehaviorSpec({
     Given("A type element annotated with @PlantUmlClass") {
@@ -23,7 +31,7 @@ internal class RelationTest : BehaviorSpec({
         When("I create an inheritance from a type element'") {
             val result = Inheritance.of(annotatedClassTypeElement)
 
-            Then ("it should return the inheritance relation") {
+            Then("it should return the inheritance relation") {
                 result shouldBe Inheritance(TypeRef.of(superClassTypeElement), TypeRef.of(annotatedClassTypeElement))
             }
         }
@@ -88,6 +96,27 @@ internal class RelationTest : BehaviorSpec({
                     Association(TypeRef.of(annotatedClassTypeElement), t1, f),
                     Association(TypeRef.of(annotatedClassTypeElement), t2, f)
                 )
+            }
+        }
+
+        When("I create custom dependencies from a source type to a set of target types") {
+            val targetTypes = listOf(FlyingVehicle::class, Flight::class)
+
+            val sourceTypeName = Airport::class.java.name
+            val result = Dependency.allOf(typeElement(
+                name = sourceTypeName,
+                dependencies = targetTypes.map {
+                    mockk<PlantUmlDependency>().apply {
+                        every { target } throws MirroredTypeException(typeElement(name = it.java.name).asType())
+                        every { description } returns "Dependency to " + it.java.simpleName 
+                    }
+                }
+            ))
+
+            Then("it should return an association of type 'DEPENDENCY' for each target type") {
+
+                result shouldBe targetTypes
+                    .map { Dependency(TypeRef(TypeName.parse(sourceTypeName), TypeRef.Kind.COMPLEX), TypeRef.of(it), "Dependency to " + it.java.simpleName) }
             }
         }
     }

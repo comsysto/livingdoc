@@ -1,8 +1,10 @@
 package com.comsysto.livingdoc.s0t.example;
 
+import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlClass;
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlExecutable;
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlExecutable.StartOfSequence;
 
+@PlantUmlClass(diagramIds = {"airport", "!default"})
 public class Flight {
 
     private Airport airport;

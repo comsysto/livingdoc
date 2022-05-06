@@ -1,8 +1,11 @@
 package com.comsysto.livingdoc.s0t.model
 
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlClass
-import com.comsysto.livingdoc.s0t.model.Relation.*
-import com.comsysto.livingdoc.s0t.typeName
+import com.comsysto.livingdoc.s0t.apextensions.typeName
+import com.comsysto.livingdoc.s0t.model.relations.Association
+import com.comsysto.livingdoc.s0t.model.relations.Dependency
+import com.comsysto.livingdoc.s0t.model.relations.Inheritance
+import com.comsysto.livingdoc.s0t.model.relations.Realization
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
@@ -17,6 +20,7 @@ data class TypeModel(
     val realizations: List<Realization> = listOf(),
     val inheritance: Inheritance? = null,
     val associations: List<Association> = listOf(),
+    val dependencies: List<Dependency> = listOf(),
     val notes: List<NoteModel> = listOf(),
     val diagramIds: Set<String> = setOf()
 ) {
@@ -48,7 +52,9 @@ data class TypeModel(
             Realization.allOf(typeElement),
             Inheritance.of(typeElement),
             Association.allOf(typeElement),
+            Dependency.allOf(typeElement),
             NoteModel.allOf(typeElement),
-            typeElement.getAnnotation(PlantUmlClass::class.java).let { it.diagramIds.toSet() })
+            typeElement.getAnnotation(PlantUmlClass::class.java).diagramIds.toSet()
+        )
     }
 }
