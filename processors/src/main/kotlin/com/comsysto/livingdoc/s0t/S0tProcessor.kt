@@ -2,6 +2,7 @@ package com.comsysto.livingdoc.s0t
 
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlClass
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlExecutable
+import com.comsysto.livingdoc.s0t.apextensions.qName
 import com.comsysto.livingdoc.s0t.model.ExecutableModel
 import com.comsysto.livingdoc.s0t.model.S0tModel
 import com.comsysto.livingdoc.s0t.model.TypeModel

@@ -1,16 +1,14 @@
-package com.comsysto.livingdoc.s0t
+package com.comsysto.livingdoc.s0t.apextensions
 
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlClass
-import com.comsysto.livingdoc.s0t.model.TypeName
-import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.TypeMirror
 
-fun TypeElement.qName() = this.qualifiedName.toString()
-fun TypeElement.typeName() = TypeName.parse(this.qualifiedName.toString())
-
+/**
+ * Checks if the type element represents an enum type.
+ */
 fun TypeMirror.isEnum() = this.asTypeElement()?.kind != ElementKind.ENUM
 
 /**
@@ -27,15 +25,20 @@ fun TypeMirror.asTypeElement(): TypeElement? = when (this) {
     else -> null
 }
 
+/**
+ * Get the type mirror's type arguments.
+ */
 fun TypeMirror.typeArguments() = asDeclaredType()?.typeArguments ?: emptyList()
 
+/**
+ * Converts the type mirror to a DeclaredType if possible.
+ */
 fun TypeMirror.asDeclaredType() = when (this) {
     is DeclaredType -> this
     else -> null
 }
 
-fun isPartOfDiagram(type: TypeMirror) = type.asTypeElement()?.getAnnotation(PlantUmlClass::class.java) != null
-fun isPartOfDiagram(type: TypeElement) = type.getAnnotation(PlantUmlClass::class.java) != null
-
-
-
+/**
+ * Checks if the type mirror is annotated with ``@PlantUmlClass``.
+ */
+fun isPlantUmlClass(type: TypeMirror) = type.asTypeElement()?.getAnnotation(PlantUmlClass::class.java) != null

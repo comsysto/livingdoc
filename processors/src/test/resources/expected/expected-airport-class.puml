@@ -1,0 +1,39 @@
+@startuml
+!include ./format.iuml
+hide empty members
+title Airport class diagram
+
+class Airplane {
+    #Tuple<Wing, Wing> wings
+}
+
+note bottom of Airplane
+This models an airplane, a
+//flying//
+vehicle that is
+**very** fast.
+end note
+
+class Airport
+class Flight {
+    -Airport airport
+    -Airplane airplane
+}
+
+interface Flying
+class FlyingVehicle
+class Wing
+
+FlyingVehicle <|-- Airplane
+Airplane *--> "2" Wing
+
+Airport ..> FlyingVehicle: restricted parking\ncapabilities
+Airport ..> Airplane
+
+Flight --> Airport
+Flight --> Airplane
+
+Flying <|.. FlyingVehicle
+Vehicle <|-- FlyingVehicle
+
+@enduml

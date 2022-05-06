@@ -3,12 +3,14 @@ package com.comsysto.livingdoc.s0t.model
 import com.comsysto.livingdoc.s0t.TestUtils.name
 import com.comsysto.livingdoc.s0t.annotation.plantuml.*
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlField.AssociationType
-import com.comsysto.livingdoc.s0t.asTypeElement
+import com.comsysto.livingdoc.s0t.apextensions.asTypeElement
 import io.mockk.every
 import io.mockk.mockk
 import javax.lang.model.element.*
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.TypeKind
+import javax.lang.model.type.TypeMirror
+import kotlin.reflect.KClass
 
 object S0tModelTestObjectMother {
     val superClassTypeName = name("my.package.name.MySuperClass")
@@ -76,8 +78,9 @@ object S0tModelTestObjectMother {
     fun typeElement(
         name: String,
         elementKind: ElementKind = ElementKind.CLASS,
-        typeArgs: List<DeclaredType> = emptyList(),
-        annotation: PlantUmlClass? = plantUmlClassAnnotation
+        typeArgs: List<DeclaredType> = listOf(),
+        annotation: PlantUmlClass? = plantUmlClassAnnotation,
+        dependencies: List<PlantUmlDependency> = listOf()
     ): TypeElement {
         val typeElement = mockk<TypeElement>()
 
@@ -92,6 +95,7 @@ object S0tModelTestObjectMother {
             every { asType() } returns typeMirror
             every { kind } returns elementKind
             every { getAnnotation(PlantUmlClass::class.java) } returns annotation
+            every { getAnnotationsByType(PlantUmlDependency::class.java) } returns dependencies.toTypedArray()
         }
         return typeElement
     }
