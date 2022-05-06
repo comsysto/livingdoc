@@ -11,9 +11,12 @@ import javax.lang.model.element.TypeElement
 /**
  * Models a note.
  */
-data class NoteModel(val text: String, val position: Position) {
+data class NoteModel(val text: String, val position: Position, override val diagramIds: Set<String> = setOf()) : ExplicitlyFilterable<NoteModel> {
+
+    override fun filter(diagramId: String?, types: Map<TypeName.ComplexTypeName, TypeModel>) = this
 
     companion object {
+
         fun allOf(typeElement: TypeElement): List<NoteModel> = typeElement.getAnnotation(PlantUmlNotes::class.java)
             ?.let { notes -> notes.value.mapNotNull { toNoteModel(it, typeElement) } }
             ?: typeElement.getAnnotation(PlantUmlNote::class.java)
@@ -34,7 +37,6 @@ data class NoteModel(val text: String, val position: Position) {
                 environment().processingEnvironment.elementUtils.getDocComment(typeElement)
                     ?.let { bodyFrom(it, note.maxLengthFromJavaDoc) }
             }
-
         /**
          * Generates a note body from the specified String, abbreviating it to
          * the maximum number of sentences (terminated by a '.') that doesn't

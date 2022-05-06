@@ -7,13 +7,6 @@ class Airplane {
     #Tuple<Wing, Wing> wings
 }
 
-note bottom of Airplane
-This models an airplane, a
-//flying//
-vehicle that is
-**very** fast.
-end note
-
 class Airport
 class Flight {
     -Airport airport
@@ -34,6 +27,5 @@ Flight --> Airport
 Flight --> Airplane
 
 Flying <|.. FlyingVehicle
-Vehicle <|-- FlyingVehicle
 
 @enduml

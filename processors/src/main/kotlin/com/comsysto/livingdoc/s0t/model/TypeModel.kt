@@ -22,8 +22,8 @@ data class TypeModel(
     val associations: List<Association> = listOf(),
     val dependencies: List<Dependency> = listOf(),
     val notes: List<NoteModel> = listOf(),
-    val diagramIds: Set<String> = setOf()
-) {
+    override val diagramIds: Set<String> = setOf()
+) : ExplicitlyFilterable<TypeModel> {
     enum class Type {
         INTERFACE, ABSTRACT, CLASS, ENUM;
 
@@ -57,4 +57,14 @@ data class TypeModel(
             typeElement.getAnnotation(PlantUmlClass::class.java).diagramIds.toSet()
         )
     }
+
+    override fun filter(diagramId: String?, types: Map<TypeName.ComplexTypeName, TypeModel>) = TypeModel(
+        name,
+        type,
+        fields,
+        realizations.filter { it.isPartOfDiagram(diagramId, types) },
+        inheritance?.let { if (it.isPartOfDiagram(diagramId, types)) it else null },
+        associations.filter { it.isPartOfDiagram(diagramId, types) },
+        dependencies.filter { it.isPartOfDiagram(diagramId, types) },
+        notes.filter { it.isPartOfDiagram(diagramId) })
 }

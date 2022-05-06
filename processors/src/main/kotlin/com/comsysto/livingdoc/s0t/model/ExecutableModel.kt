@@ -1,6 +1,5 @@
 package com.comsysto.livingdoc.s0t.model
 
-import com.comsysto.livingdoc.s0t.S0tProcessor
 import com.comsysto.livingdoc.s0t.S0tProcessor.Companion.environment
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlExecutable
 import com.comsysto.livingdoc.s0t.model.TypeName.ComplexTypeName
@@ -15,11 +14,8 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver
 import org.slf4j.LoggerFactory
-import java.io.File
-import java.nio.file.Paths
 import java.util.*
 import javax.lang.model.element.ExecutableElement
-import javax.tools.StandardLocation
 
 /**
  * Models a sequence of executable members in a tree-like structure.
@@ -40,9 +36,14 @@ data class ExecutableModel(
      * The executables signature including parameters.
      */
     val signature: String? = null,
-) {
+
+    override val diagramIds: Set<String> = setOf()
+) : ExplicitlyFilterable<ExecutableModel> {
+
+    override fun filter(diagramId: String?, types: Map<ComplexTypeName, TypeModel>) = this
 
     companion object {
+
         private val log = LoggerFactory.getLogger(ExecutableModel::class.java.name)
 
         /**
@@ -101,7 +102,6 @@ data class ExecutableModel(
             log.warn(e.message, e)
             null
         }
-
         private fun methodDeclarations(unit: CompilationUnit, executableName: ExecutableName): List<MethodDeclaration> {
             return unit.types
                 .filter { type -> type.fullyQualifiedName == Optional.of(executableName.typeName.asQualifiedName()) }

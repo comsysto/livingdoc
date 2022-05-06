@@ -20,8 +20,14 @@ class S0tModel {
         executables[executable.name] = executable
     }
 
-    fun typesForDiagram(diagramId: String?) = (
-            if (diagramId != null) types.entries.filter { it.value.diagramIds.contains(diagramId) }
-            else types.entries.filter { !it.value.diagramIds.contains("!default") })
-        .associate { Pair(it.key, it.value) }
+    fun filter(diagramId: String?) =
+        S0tModel().also {
+            val filteredTypes: Map<ComplexTypeName, TypeModel> = types.filter { entry -> entry.value.isPartOfDiagram(diagramId) }
+
+            it.types.putAll(filteredTypes.entries.associate { entry -> Pair(entry.key, entry.value.filter(diagramId, filteredTypes)) })
+            it.executables.putAll(
+                executables.entries
+                    .filter { entry -> entry.value.isPartOfDiagram(diagramId) }
+                    .associate { entry -> Pair(entry.key, entry.value.filter(diagramId, filteredTypes)) })
+        }
 }

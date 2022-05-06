@@ -2,7 +2,7 @@
 
 <#macro renderRelations s0tModel>
 <#-- @ftlvariable name="s0tModel" type="com.comsysto.livingdoc.s0t.model.S0tModel" -->
-    <#list s0tModel.typesForDiagram(diagramId)?values as type>
+    <#list s0tModel.types?values as type>
 
         <#compress>
             <#list type.realizations as realization>

@@ -24,7 +24,10 @@ object FreemarkerRenderer : OutputRenderer {
     private const val DEF_OUTPUT_DEFAULT_EXTENSION = "puml"
     private const val KEY_ACCEPTED_OUTPUT_EXTENSIONS = "output.accepted-extensions"
     private const val DEF_ACCEPTED_OUTPUT_EXTENSIONS = "puml,iuml,md,adoc"
+    private const val KEY_DIAGRAM_ID = "diagram-id"
+    private const val DEF_DIAGRAM_ID = "default"
     private const val STANDARD_TEMPLATES_DIRECTORY = "com/comsysto/livingdoc/s0t"
+
 
     override fun render(model: S0tModel) {
         val env = environment().processingEnvironment
@@ -67,9 +70,17 @@ object FreemarkerRenderer : OutputRenderer {
         if (cfg.getBoolean(KEY_IS_TEMPLATE, false)) {
             val outputFile = File(outputDirectory, outputFileName(cfg, templateFile, templateExtension, templateDirectory))
                     .apply { parentFile.mkdirs() }
+            val diagramId = cfg.getString(KEY_DIAGRAM_ID, DEF_DIAGRAM_ID)
 
             log.info("Rendering template {} to {}", template.name, outputFile)
-            template.process(PlantUmlModel(templateDirectory.absolutePath, outputDirectory.absolutePath, model), outputFile.bufferedWriter(UTF_8))
+
+            template.process(
+                PlantUmlModel(
+                    diagramId,
+                    templateDirectory.absolutePath,
+                    outputDirectory.absolutePath,
+                    model.filter(diagramId)),
+                outputFile.bufferedWriter(UTF_8))
         }
     }
 

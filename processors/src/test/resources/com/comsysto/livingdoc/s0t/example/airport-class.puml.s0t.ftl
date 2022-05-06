@@ -1,5 +1,4 @@
-<#ftl attributes={"s0t:is-template":true}/>
-<#global diagramId="airport"/>
+<#ftl attributes={ "s0t:is-template":true, "s0t:diagram-id":"airport" }/>
 <#-- @ftlvariable name="s0tModel" type="com.comsysto.livingdoc.s0t.model.S0tModel" -->
 @startuml
 !include ./format.iuml

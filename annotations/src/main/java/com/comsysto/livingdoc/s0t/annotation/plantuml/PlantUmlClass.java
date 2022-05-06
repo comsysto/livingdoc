@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 public @interface PlantUmlClass {
 
-    String[] diagramIds() default { "package" };
+    String[] diagramIds() default { "default" };
 
     /**
      * A flag that tells the annotation processor if all fields should be added

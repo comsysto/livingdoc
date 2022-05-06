@@ -3,7 +3,7 @@ package com.comsysto.livingdoc.s0t.example;
 
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlClass;
 
-@PlantUmlClass(diagramIds = "ground-vehicles")
+@PlantUmlClass(diagramIds = { "default", "ground-vehicles" })
 public class Car extends GroundVehicle {
 
     public Car() {

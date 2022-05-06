@@ -10,7 +10,7 @@ import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlField;
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlField.AssociationType;
 import com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlNote;
 
-@PlantUmlClass(diagramIds = "airport")
+@PlantUmlClass(diagramIds = { "default", "airport" })
 @PlantUmlNote(
     value = "This models an airplane, a //flying// \nvehicle that is **very** fast.",
     position = BOTTOM)

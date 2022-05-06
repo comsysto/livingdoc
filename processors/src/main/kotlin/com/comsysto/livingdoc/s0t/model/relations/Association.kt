@@ -9,6 +9,8 @@ import com.comsysto.livingdoc.s0t.apextensions.isPlantUmlClass
 import com.comsysto.livingdoc.s0t.model.FieldModel
 import com.comsysto.livingdoc.s0t.model.TypeRef
 import com.comsysto.livingdoc.s0t.apextensions.typeArguments
+import com.comsysto.livingdoc.s0t.model.TypeModel
+import com.comsysto.livingdoc.s0t.model.TypeName
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.type.DeclaredType

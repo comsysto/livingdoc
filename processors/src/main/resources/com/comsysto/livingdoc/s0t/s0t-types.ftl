@@ -1,9 +1,8 @@
 <#import "s0t-members.ftl" as Members>
-<#-- @ftlvariable name="diagramId" type="String" -->
 
 <#macro renderTypes s0tModel>
 <#-- @ftlvariable name="s0tModel" type="com.comsysto.livingdoc.s0t.model.S0tModel" -->
-    <#list s0tModel.typesForDiagram(diagramId)?values as type>
+    <#list s0tModel.types?values as type>
         <@renderType type/>
     </#list>
 </#macro>
