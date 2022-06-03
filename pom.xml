@@ -32,7 +32,7 @@
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
         <kotlin.version>1.6.10</kotlin.version>
         <kotlintest-runner-junit5.version>3.4.2</kotlintest-runner-junit5.version>
-        <logback-classic.version>1.2.9</logback-classic.version>
+        <logback-classic.version>1.2.10</logback-classic.version>
         <mockk.version>1.12.1</mockk.version>
         <snakeyaml.version>1.27</snakeyaml.version>
         <junit-platform.version>1.8.1</junit-platform.version>
