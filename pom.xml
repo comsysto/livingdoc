@@ -17,8 +17,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <kotlin.code.style>official</kotlin.code.style>
 
         <annotations.version>12.0</annotations.version>
@@ -30,7 +30,7 @@
         <guava.version>28.2-jre</guava.version>
         <javaparser.version>3.14.5</javaparser.version>
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
-        <kotlin.version>1.6.10</kotlin.version>
+        <kotlin.version>1.8.21</kotlin.version>
         <kotlintest-runner-junit5.version>3.4.2</kotlintest-runner-junit5.version>
         <logback-classic.version>1.2.9</logback-classic.version>
         <mockk.version>1.12.1</mockk.version>
@@ -38,6 +38,8 @@
         <junit-platform.version>1.8.1</junit-platform.version>
         <tools.version>0.16.0</tools.version>
         <commons-text.version>1.9</commons-text.version>
+        <assertj-core.version>3.24.2</assertj-core.version>
+        <jsonassert.version>1.5.1</jsonassert.version>
     </properties>
 
     <dependencies>
@@ -56,6 +58,16 @@
             <artifactId>junit-jupiter</artifactId>
             <version>${junit-jupiter.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>${jsonassert.version}</version>
         </dependency>
     </dependencies>
     <dependencyManagement>

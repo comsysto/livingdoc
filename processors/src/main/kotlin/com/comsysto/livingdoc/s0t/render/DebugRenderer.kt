@@ -4,7 +4,7 @@ import com.comsysto.livingdoc.s0t.model.S0tModel
 import com.google.gson.GsonBuilder
 import org.slf4j.LoggerFactory
 
-object DebugRenderer: OutputRenderer {
+class DebugRenderer: OutputRenderer {
     private val log = LoggerFactory.getLogger(DebugRenderer::class.java.name)
     private val gson = GsonBuilder().setPrettyPrinting().create()
 

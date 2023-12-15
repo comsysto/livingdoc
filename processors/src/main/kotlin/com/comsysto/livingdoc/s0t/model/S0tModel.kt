@@ -1,6 +1,8 @@
 package com.comsysto.livingdoc.s0t.model
 
 import com.comsysto.livingdoc.s0t.model.TypeName.ComplexTypeName
+import com.comsysto.livingdoc.s0t.render.DebugRenderer
+import com.google.gson.GsonBuilder
 import java.util.*
 
 /**
@@ -22,12 +24,22 @@ class S0tModel {
 
     fun filter(diagramId: String?) =
         S0tModel().also {
-            val filteredTypes: Map<ComplexTypeName, TypeModel> = types.filter { entry -> entry.value.isPartOfDiagram(diagramId) }
+            val filteredTypes: Map<ComplexTypeName, TypeModel> =
+                types.filter { entry -> entry.value.isPartOfDiagram(diagramId) }
 
-            it.types.putAll(filteredTypes.entries.associate { entry -> Pair(entry.key, entry.value.filter(diagramId, filteredTypes)) })
+            it.types.putAll(filteredTypes.entries.associate { entry ->
+                Pair(
+                    entry.key,
+                    entry.value.filter(diagramId, filteredTypes)
+                )
+            })
             it.executables.putAll(
                 executables.entries
                     .filter { entry -> entry.value.isPartOfDiagram(diagramId) }
                     .associate { entry -> Pair(entry.key, entry.value.filter(diagramId, filteredTypes)) })
         }
+
+    override fun toString(): String {
+        return GsonBuilder().setPrettyPrinting().create().toJson(this)
+    }
 }

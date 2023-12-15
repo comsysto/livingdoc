@@ -23,7 +23,7 @@ import javax.lang.model.element.TypeElement
     "com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlClass",
     "com.comsysto.livingdoc.s0t.annotation.plantuml.PlantUmlExecutable.StartOfSequence"
 )
-@SupportedOptions(KEY_OUT_DIR)
+@SupportedOptions(KEY_OUT_DIR, KEY_RENDERERS)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor::class)
 class S0tProcessor : AbstractProcessor() {
@@ -36,8 +36,6 @@ class S0tProcessor : AbstractProcessor() {
     /**
      * The list of output renderers registered with the processor.
      */
-    private val outputRenderers: List<OutputRenderer> = listOf(DebugRenderer, FreemarkerRenderer)
-
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
         log.info("S0T called with options: {}", processingEnv.options.toString())
         if (!roundEnv.processingOver() && !roundEnv.errorRaised()) {
@@ -90,7 +88,7 @@ class S0tProcessor : AbstractProcessor() {
     private fun annotatedElements(annotation: TypeElement) = environment().roundEnvironment.getElementsAnnotatedWith(annotation)
 
     private fun renderOutput() {
-        outputRenderers.forEach { it.render(model) }
+        environment().outputRenderers.forEach { it.render(model) }
     }
 
     companion object {

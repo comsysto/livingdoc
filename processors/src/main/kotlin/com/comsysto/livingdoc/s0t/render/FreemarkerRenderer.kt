@@ -14,20 +14,21 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
 
-object FreemarkerRenderer : OutputRenderer {
+class FreemarkerRenderer : OutputRenderer {
     private val log = LoggerFactory.getLogger(FreemarkerRenderer::class.java.name)
 
-    private const val CUSTOM_ATTRIBUTE_PREFIX = "s0t:"
-    private const val KEY_IS_TEMPLATE = "is-template"
-    private const val KEY_OUTPUT_FILENAME = "output.filename"
-    private const val KEY_OUTPUT_DEFAULT_EXTENSION = "output.default-extension"
-    private const val DEF_OUTPUT_DEFAULT_EXTENSION = "puml"
-    private const val KEY_ACCEPTED_OUTPUT_EXTENSIONS = "output.accepted-extensions"
-    private const val DEF_ACCEPTED_OUTPUT_EXTENSIONS = "puml,iuml,md,adoc"
-    private const val KEY_DIAGRAM_ID = "diagram-id"
-    private const val DEF_DIAGRAM_ID = "default"
-    private const val STANDARD_TEMPLATES_DIRECTORY = "com/comsysto/livingdoc/s0t"
-
+    companion object {
+        private const val CUSTOM_ATTRIBUTE_PREFIX = "s0t:"
+        private const val KEY_IS_TEMPLATE = "is-template"
+        private const val KEY_OUTPUT_FILENAME = "output.filename"
+        private const val KEY_OUTPUT_DEFAULT_EXTENSION = "output.default-extension"
+        private const val DEF_OUTPUT_DEFAULT_EXTENSION = "puml"
+        private const val KEY_ACCEPTED_OUTPUT_EXTENSIONS = "output.accepted-extensions"
+        private const val DEF_ACCEPTED_OUTPUT_EXTENSIONS = "puml,iuml,md,adoc"
+        private const val KEY_DIAGRAM_ID = "diagram-id"
+        private const val DEF_DIAGRAM_ID = "default"
+        private const val STANDARD_TEMPLATES_DIRECTORY = "com/comsysto/livingdoc/s0t"
+    }
 
     override fun render(model: S0tModel) {
         val env = environment().processingEnvironment

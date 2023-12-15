@@ -1,5 +1,6 @@
 package com.comsysto.livingdoc.s0t
 
+import com.comsysto.livingdoc.s0t.render.OutputRenderer
 import org.apache.commons.configuration2.Configuration
 import org.apache.commons.configuration2.ConfigurationUtils
 import org.apache.commons.configuration2.YAMLConfiguration
@@ -11,6 +12,7 @@ import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
 import javax.tools.JavaFileManager
 import javax.tools.StandardLocation
+import kotlin.reflect.full.createInstance
 
 /**
  * The S0T environment.
@@ -25,8 +27,8 @@ data class Environment(
     /**
      * The annotation processing environment for the currently running round.
      */
-    val roundEnvironment: RoundEnvironment)
-{
+    val roundEnvironment: RoundEnvironment
+) {
     /**
      * The root path containing the YAML configuration file. Unless explicitly
      * set through the annotation processor option 's0t.src.dir', this will be
@@ -39,6 +41,8 @@ data class Environment(
      * directory.
      */
     val configuration: Configuration
+
+    val outputRenderers: List<OutputRenderer>
 
     init {
         val configurationPath: Path = configFileInUserSpecifiedPath()
@@ -53,6 +57,9 @@ data class Environment(
         addOptionsToConfiguration()
 
         root = configurationPath.parent.toAbsolutePath()
+        outputRenderers = configuration.getString(KEY_RENDERERS).split(",")
+            .map { rendererClassName -> Class.forName(rendererClassName.trim()) }
+            .map { c -> c.kotlin.createInstance() as OutputRenderer }
     }
 
     private fun configFileInSourcePath() = readonlyFilerPath(StandardLocation.SOURCE_PATH, "", CONFIG_FILE_NAME)
@@ -77,7 +84,7 @@ data class Environment(
             .map { readonlyFilerPath(it, packageName, "${simpleTypeName}.java") }
             .find { it != null }
 
-        ?: root.resolve(Paths.get("${packageName.replace(".", "/")}/${simpleTypeName}.java"))
+            ?: root.resolve(Paths.get("${packageName.replace(".", "/")}/${simpleTypeName}.java"))
 
     /**
      * Return the output directory.
